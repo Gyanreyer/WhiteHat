@@ -19,7 +19,7 @@ public class Player : MonoBehaviour {
         //Rotate to face mouse
         Vector3 mousePos = Input.mousePosition;
 
-        mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0));//transform.position.z-Camera.main.transform.position.z));
+        mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0));
 
         transform.eulerAngles = new Vector3(0,0,Mathf.Atan2(mousePos.y-transform.position.y,mousePos.x-transform.position.x)*Mathf.Rad2Deg - 90);
 
