@@ -103,8 +103,19 @@ public class CameraAI : MonoBehaviour
         vecToPlayer = playerObj.GetComponent<Transform>().position - this.gameObject.transform.position;
         //use dot product to project forward vector onto that - see if player is in front
         float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
-        //instead of doing a bunch of ifs and then returning true or false, just put 'em all in a single return statement
-        return (forwardDot > 0 && forwardDot < sightRange && Vector3.Angle(vecToPlayer, this.transform.up) <= sightWidthAngle);
+        //check to see if we should even bother with a raycast... I assume this is more efficient than always raycasting every frame?
+        if (forwardDot > 0 && forwardDot < sightRange && Vector3.Angle(vecToPlayer, this.transform.up) <= sightWidthAngle)
+        {
+            //needed to get info about the raycast
+            RaycastHit hitInfo;
+            //do a raycast, perhaps can make more efficient with layer masks?
+            Physics.Raycast(this.transform.position, vecToPlayer, out hitInfo, forwardDot);
+            //check the object at the raycast hit
+            if (hitInfo.collider != null)
+                return (hitInfo.transform.gameObject == playerObj);
+        }
+        //if we shouldn't raycast, return false
+        return false;
     }
     /// <summary>
     /// Follow the player; runs when in the following state
@@ -133,7 +144,9 @@ public class CameraAI : MonoBehaviour
     /// </summary>
     private void Wait()
     {
+        //wait a little longer
         waitingTime += Time.deltaTime;
+        //check to see if we're done
         if (waitingTime >= waitDuration)
         {
             waitingTime = 0;
@@ -145,17 +158,23 @@ public class CameraAI : MonoBehaviour
     /// </summary>
     private void Patrol()
     {
+        //if we're rotating in the positive direction
         if (rotatingRight)
         {
+            //increase rotation
             totalRotation += rotationSpeed;
+            //check if you've hit bounds
             if (totalRotation > maxRot)
             {
+                //clamp rotation
                 totalRotation = maxRot;
+                //swawp direction
                 rotatingRight = false;
+                //change state
                 camState = CameraState.Waiting;
             }
         }
-        else
+        else//inverse of previous blocks
         {
             totalRotation -= rotationSpeed;
             if (totalRotation < minRot)
@@ -165,6 +184,7 @@ public class CameraAI : MonoBehaviour
                 camState = CameraState.Waiting;
             }
         }
+        //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
     }
     #endregion
