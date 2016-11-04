@@ -44,6 +44,8 @@ public class CameraAI : MonoBehaviour
 
     private FieldOfView fov;//Field of view for camera, mainly handles visualation but also returns if player is in sight
 
+    public GameObject bulletPrefab;
+
     #endregion
     #region Properties
     public float TimeToAlert
@@ -171,4 +173,12 @@ public class CameraAI : MonoBehaviour
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
     }
     #endregion
+
+
+    private void ShootPlayer()
+    {
+        GameObject bullet = (GameObject)Instantiate(bulletPrefab,transform.position,Quaternion.identity);
+        bullet.GetComponent<Bullet>().setUp(transform.position,vecToPlayer);
+
+    }
 }
