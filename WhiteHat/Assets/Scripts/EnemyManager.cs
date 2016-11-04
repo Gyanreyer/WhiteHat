@@ -20,14 +20,18 @@ public class EnemyManager : MonoBehaviour {
     private GameObject[] cameras;
     private GameObject[] robots;
     //States for alert phase
-    private enum AlertState
+    public enum AlertStates
     {
         Patrol,
         Alarmed,
         Searching,
     }
     //Current alert state
-    private AlertState alertState;
+    private AlertStates alertState;
+    #endregion
+    #region Properties
+    public AlertStates AlertState
+    { get { return alertState; } }
     #endregion
 
     // Use this for initialization
@@ -53,7 +57,7 @@ public class EnemyManager : MonoBehaviour {
     {
         Debug.Log("CONTACT!");
         //Trigger the alarm state
-        alertState = AlertState.Alarmed;
+        alertState = AlertStates.Alarmed;
         //Update last known location
         lastKnownLoc = playerObj.transform.position;
     }
