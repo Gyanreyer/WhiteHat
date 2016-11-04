@@ -16,17 +16,20 @@ public class CameraAI : MonoBehaviour
     /// Maximum rotation - the camera also won't go past this
     /// </summary>
     public float maxRot = 90f;
+
+    // Deprecated -- FieldOfView takes care of angle width and range
     /// <summary>
     /// The width of the sight cone in degrees
     /// </summary>
-    public float sightWidthAngle = 45f;
+    /*public float sightWidthAngle = 45f;
     /// <summary>
     /// The length of the sight cone
     /// </summary>
-    public float sightRange = 10f;
+    public float sightRange = 10f; 
     /// <summary>
     /// Speed that the camera will rotate
-    /// </summary>
+    /// </summary>*/
+
     public float rotationSpeed = 2f;
     /// <summary>
     /// Time to wait at ends while in patrol phase, in seconds
@@ -55,6 +58,9 @@ public class CameraAI : MonoBehaviour
     private float waitingTime = 0f;
     //
     private Renderer render;//DEBUG//
+
+    private FieldOfView fov;//Field of view for camera, mainly handles visualation but also returns if player is in sight
+
     #endregion
     #region Unity Defaults
     void Start()
@@ -62,6 +68,8 @@ public class CameraAI : MonoBehaviour
         playerObj = GameObject.FindGameObjectWithTag("Player");
         render = this.GetComponent<Renderer>();//DEBUG//
         render.material.shader = Shader.Find("Specular");//DEBUG//
+
+        fov = GetComponent<FieldOfView>();
     }
 
     void Update()
@@ -80,8 +88,9 @@ public class CameraAI : MonoBehaviour
                 break;
         }
         //Check for LoS
-        if (CanSeePlayer())
+        if (fov.playerVisible)//(CanSeePlayer())
         {
+            vecToPlayer = playerObj.transform.position - this.gameObject.transform.position;
             camState = CameraState.Following;
             render.material.SetColor("_SpecColor", Color.red);//DEBUG//
         }
@@ -97,12 +106,16 @@ public class CameraAI : MonoBehaviour
     /// <summary>
     /// Checks to see if the camera can see the player given its current position and rotation
     /// </summary>
+    ///
+    
+    /*Deprecated -- FieldOfView takes care of player detection with fov.PlayerVisible
     private bool CanSeePlayer()
     {
         //get vec between this and player
         vecToPlayer = playerObj.GetComponent<Transform>().position - this.gameObject.transform.position;
         //use dot product to project forward vector onto that - see if player is in front
         float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
+
         //check to see if we should even bother with a raycast... I assume this is more efficient than always raycasting every frame?
         if (forwardDot > 0 && forwardDot < sightRange && Vector3.Angle(vecToPlayer, this.transform.up) <= sightWidthAngle)
         {
@@ -117,6 +130,7 @@ public class CameraAI : MonoBehaviour
         //if we shouldn't raycast, return false
         return false;
     }
+    */
     /// <summary>
     /// Follow the player; runs when in the following state
     /// </summary>
