@@ -4,36 +4,13 @@ using System.Collections;
 public class CameraAI : MonoBehaviour
 {
     #region Public Fields
-    /// <summary>
-    /// Rotation at the end of animation, 90 is only default
-    /// </summary>
-    public float endRot = 90f;
-    /// <summary>
-    /// Minimum rotation - the camera won't go past this when tracking the player
-    /// </summary>
+    [Tooltip("Minimum rotation - the camera won't go past this when tracking the player")]
     public float minRot = 0f;
-    /// <summary>
-    /// Maximum rotation - the camera also won't go past this
-    /// </summary>
+    [Tooltip("Maximum rotation - the camera also won't go past this")]
     public float maxRot = 90f;
-
-    // Deprecated -- FieldOfView takes care of angle width and range
-    /// <summary>
-    /// The width of the sight cone in degrees
-    /// </summary>
-    /*public float sightWidthAngle = 45f;
-    /// <summary>
-    /// The length of the sight cone
-    /// </summary>
-    public float sightRange = 10f; 
-    /// <summary>
-    /// Speed that the camera will rotate
-    /// </summary>*/
-
+    [Tooltip("Speed that the camera will rotate")]
     public float rotationSpeed = 2f;
-    /// <summary>
-    /// Time to wait at ends while in patrol phase, in seconds
-    /// </summary>
+    [Tooltip("Time to wait at ends while in patrol phase, in seconds")]
     public float waitDuration = 1f;
     #endregion
     #region Private Fields
@@ -48,6 +25,8 @@ public class CameraAI : MonoBehaviour
     private CameraState camState = CameraState.Waiting;
     //A reference to the player
     private GameObject playerObj;
+    //Reference to the enemy manager
+    private GameObject enemyMan;
     //Whether the camera is going towards its end rotation or not
     private bool rotatingRight = true;
     //The total rotation... perhaps a better way to do this but it's all I remember how to do
@@ -56,18 +35,28 @@ public class CameraAI : MonoBehaviour
     private Vector3 vecToPlayer;
     //Time spent waiting during wait state
     private float waitingTime = 0f;
-    //
-    private Renderer render;//DEBUG//
+    //Time to trigger an alarm, in seconds
+    private float timeToAlert = 2f;
+    //Time spent staring at the player
+    private float spottingTime = 0f;
+    //Renderer for the FOV mesh
+    private Renderer render;
 
     private FieldOfView fov;//Field of view for camera, mainly handles visualation but also returns if player is in sight
 
+    #endregion
+    #region Properties
+    public float TimeToAlert
+    {
+        set { timeToAlert = value; }
+    }
     #endregion
     #region Unity Defaults
     void Start()
     {
         playerObj = GameObject.FindGameObjectWithTag("Player");
-        render = this.GetComponent<Renderer>();//DEBUG//
-        render.material.shader = Shader.Find("Specular");//DEBUG//
+        enemyMan = GameObject.Find("EnemyManager");
+        render = this.transform.GetChild(0).GetComponent<Renderer>();
 
         fov = GetComponent<FieldOfView>();
     }
@@ -92,50 +81,31 @@ public class CameraAI : MonoBehaviour
         {
             vecToPlayer = playerObj.transform.position - this.gameObject.transform.position;
             camState = CameraState.Following;
-            render.material.SetColor("_SpecColor", Color.red);//DEBUG//
+            render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
         }
         else
         {
             if (camState == CameraState.Following)
                 camState = CameraState.Patroling;
-            render.material.SetColor("_SpecColor", Color.gray);//DEBUG//
+            render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
         }
     }
     #endregion
     #region Methods
     /// <summary>
-    /// Checks to see if the camera can see the player given its current position and rotation
-    /// </summary>
-    ///
-    
-    /*Deprecated -- FieldOfView takes care of player detection with fov.PlayerVisible
-    private bool CanSeePlayer()
-    {
-        //get vec between this and player
-        vecToPlayer = playerObj.GetComponent<Transform>().position - this.gameObject.transform.position;
-        //use dot product to project forward vector onto that - see if player is in front
-        float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
-
-        //check to see if we should even bother with a raycast... I assume this is more efficient than always raycasting every frame?
-        if (forwardDot > 0 && forwardDot < sightRange && Vector3.Angle(vecToPlayer, this.transform.up) <= sightWidthAngle)
-        {
-            //needed to get info about the raycast
-            RaycastHit hitInfo;
-            //do a raycast, perhaps can make more efficient with layer masks?
-            Physics.Raycast(this.transform.position, vecToPlayer, out hitInfo, forwardDot);
-            //check the object at the raycast hit
-            if (hitInfo.collider != null)
-                return (hitInfo.transform.gameObject == playerObj);
-        }
-        //if we shouldn't raycast, return false
-        return false;
-    }
-    */
-    /// <summary>
     /// Follow the player; runs when in the following state
     /// </summary>
     private void Follow()
     {
+        //Get forward dot for distance
+        float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
+        //increase time staring at player, modified inversely by distance
+        spottingTime += Time.deltaTime / forwardDot;
+        //check to see if you should trigger an alarm
+        if (spottingTime >= timeToAlert)
+        {
+            enemyMan.GetComponent<EnemyManager>().TriggerAlarm();
+        }
         //check to see if we should rotate based on angle to player
         if (Vector3.Angle(vecToPlayer, this.transform.up) > rotationSpeed)
         {
@@ -151,7 +121,6 @@ public class CameraAI : MonoBehaviour
             //update rotation
             this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
         }
-        //this.transform.rotation = Quaternion.LookRotation(Vector3.RotateTowards(this.transform.up, vecToPlayer, rotationSpeed * Time.deltaTime, 0.0f));
     }
     /// <summary>
     /// Wait at one of two extremes; runs in waiting state
