@@ -69,6 +69,19 @@ public class CameraAI : MonoBehaviour
 
     void Update()
     {
+        //set view mesh color based on alert state
+        switch (enemyMan.AlertState)
+        {
+            case EnemyManager.AlertStates.Patrol:
+                render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Alarmed:
+                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Searching:
+                render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+                break;
+        }
         //Handles camera states
         switch (camState)
         {
@@ -87,9 +100,12 @@ public class CameraAI : MonoBehaviour
         if (fov.playerVisible)//(CanSeePlayer())
         {
             vecToPlayer = playerObj.transform.position - this.gameObject.transform.position;
-            camState = CameraStates.Following;        }
+            camState = CameraStates.Following;
+        }
         else
         {
+            //reset spotting time
+            spottingTime = 0;
             if (camState == CameraStates.Following)
                 camState = CameraStates.Patroling;
         }
@@ -108,7 +124,7 @@ public class CameraAI : MonoBehaviour
         //check to see if you should trigger an alarm
         if (spottingTime >= timeToAlert)
         {
-            enemyMan.GetComponent<EnemyManager>().TriggerAlarm();
+            enemyMan.TriggerAlarm();
         }
         //check to see if we should rotate based on angle to player
         if (Vector3.Angle(vecToPlayer, this.transform.up) > rotationSpeed)
@@ -126,10 +142,18 @@ public class CameraAI : MonoBehaviour
             this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
         }
         //Update mesh color based on alert state
-        if(enemyMan.AlertState==EnemyManager.AlertStates.Alarmed)
-            render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
-        else
-            render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+        switch (enemyMan.AlertState)
+        {
+            case EnemyManager.AlertStates.Patrol:
+                render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Alarmed:
+                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Searching:
+                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                break;
+        }
     }
     /// <summary>
     /// Wait at one of two extremes; runs in waiting state
@@ -178,19 +202,6 @@ public class CameraAI : MonoBehaviour
         }
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
-        //set view mesh color based on alert state
-        switch(enemyMan.AlertState)
-        {
-            case EnemyManager.AlertStates.Patrol:
-                render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
-                break;
-            case EnemyManager.AlertStates.Alarmed:
-                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
-                break;
-            case EnemyManager.AlertStates.Searching:
-                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
-                break;
-        }
     }
     #endregion
 

@@ -112,5 +112,6 @@ public class EnemyManager : MonoBehaviour {
         alertState = AlertStates.Alarmed;
         //Update last known location
         lastKnownLoc = playerObj.transform.position;
+        //reset 
     }
 }
