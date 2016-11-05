@@ -15,18 +15,18 @@ public class CameraAI : MonoBehaviour
     #endregion
     #region Private Fields
     //Enum of possible states
-    private enum CameraState
+    private enum CameraStates
     {
         Patroling,
         Waiting,
         Following
     }
     //Current camera state
-    private CameraState camState = CameraState.Waiting;
+    private CameraStates camState = CameraStates.Waiting;
     //A reference to the player
     private GameObject playerObj;
     //Reference to the enemy manager
-    private GameObject enemyMan;
+    private EnemyManager enemyMan;
     //Whether the camera is going towards its end rotation or not
     private bool rotatingRight = true;
     //The total rotation... perhaps a better way to do this but it's all I remember how to do
@@ -57,8 +57,9 @@ public class CameraAI : MonoBehaviour
     void Start()
     {
         playerObj = GameObject.FindGameObjectWithTag("Player");
-        enemyMan = GameObject.Find("EnemyManager");
+        enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
         render = this.transform.GetChild(0).GetComponent<Renderer>();
+        render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
 
         fov = GetComponent<FieldOfView>();
     }
@@ -68,13 +69,13 @@ public class CameraAI : MonoBehaviour
         //Handles camera states
         switch (camState)
         {
-            case CameraState.Waiting:
+            case CameraStates.Waiting:
                 Wait();
                 break;
-            case CameraState.Patroling:
+            case CameraStates.Patroling:
                 Patrol();
                 break;
-            case CameraState.Following:
+            case CameraStates.Following:
                 Follow();
                 break;
         }
@@ -82,14 +83,11 @@ public class CameraAI : MonoBehaviour
         if (fov.playerVisible)//(CanSeePlayer())
         {
             vecToPlayer = playerObj.transform.position - this.gameObject.transform.position;
-            camState = CameraState.Following;
-            render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
-        }
+            camState = CameraStates.Following;        }
         else
         {
-            if (camState == CameraState.Following)
-                camState = CameraState.Patroling;
-            render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+            if (camState == CameraStates.Following)
+                camState = CameraStates.Patroling;
         }
     }
     #endregion
@@ -123,6 +121,11 @@ public class CameraAI : MonoBehaviour
             //update rotation
             this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
         }
+        //Update mesh color based on alert state
+        if(enemyMan.AlertState==EnemyManager.AlertStates.Alarmed)
+            render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+        else
+            render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
     }
     /// <summary>
     /// Wait at one of two extremes; runs in waiting state
@@ -135,7 +138,7 @@ public class CameraAI : MonoBehaviour
         if (waitingTime >= waitDuration)
         {
             waitingTime = 0;
-            camState = CameraState.Patroling;
+            camState = CameraStates.Patroling;
         }
     }
     /// <summary>
@@ -156,7 +159,7 @@ public class CameraAI : MonoBehaviour
                 //swawp direction
                 rotatingRight = false;
                 //change state
-                camState = CameraState.Waiting;
+                camState = CameraStates.Waiting;
             }
         }
         else//inverse of previous blocks
@@ -166,15 +169,23 @@ public class CameraAI : MonoBehaviour
             {
                 totalRotation = minRot;
                 rotatingRight = true;
-                camState = CameraState.Waiting;
+                camState = CameraStates.Waiting;
             }
         }
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
-        //set view mesh color
-        if (enemyMan.GetComponent<EnemyManager>().AlertState == EnemyManager.AlertStates.Alarmed)
+        //set view mesh color based on alert state
+        switch(enemyMan.AlertState)
         {
-
+            case EnemyManager.AlertStates.Patrol:
+                render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Alarmed:
+                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                break;
+            case EnemyManager.AlertStates.Searching:
+                render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                break;
         }
     }
     #endregion
