@@ -30,4 +30,15 @@ public class Player : MonoBehaviour {
     {
         rigidBody.velocity = velocity;
     }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        //If got hit by a bullet, die
+        if (other.gameObject.tag == "Bullet")
+        {
+            Debug.Log("Player Died");
+
+            
+        }
+    }
 }
