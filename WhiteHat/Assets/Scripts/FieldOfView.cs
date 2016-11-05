@@ -19,7 +19,9 @@ public class FieldOfView : MonoBehaviour {
 
     public int edgeResolveIterations;//Number of iterations per frame to resolve drawing on edges, higher = smoother look
     public float edgeDistanceThreshhold;
+
     
+
     public MeshFilter viewMeshFilter;
     Mesh viewMesh;
 

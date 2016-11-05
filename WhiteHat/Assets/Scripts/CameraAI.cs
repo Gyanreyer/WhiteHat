@@ -45,6 +45,9 @@ public class CameraAI : MonoBehaviour
     private FieldOfView fov;//Field of view for camera, mainly handles visualation but also returns if player is in sight
 
     public GameObject bulletPrefab;
+    public float fireRate;//Shots per second
+
+    private float fireTime=0f;
 
     #endregion
     #region Properties
@@ -76,6 +79,7 @@ public class CameraAI : MonoBehaviour
                 break;
             case CameraState.Following:
                 Follow();
+                ShootPlayer();
                 break;
         }
         //Check for LoS
@@ -182,6 +186,13 @@ public class CameraAI : MonoBehaviour
 
     private void ShootPlayer()
     {
+        if (fireTime < 1 / fireRate)
+        {
+            fireTime += Time.deltaTime;
+            return;
+        }
+
+        fireTime = 0;
         GameObject bullet = (GameObject)Instantiate(bulletPrefab,transform.position,Quaternion.identity);
         bullet.GetComponent<Bullet>().setUp(transform.position,vecToPlayer);
 
