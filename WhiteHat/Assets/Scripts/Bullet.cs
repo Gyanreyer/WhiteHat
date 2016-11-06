@@ -8,9 +8,8 @@ public class Bullet : MonoBehaviour {
 
     private Rigidbody2D rigidBody;
 	
-    public void setUp(Vector3 startPos, Vector3 dir)
+    public void setUp(Vector3 dir)
     {
-        transform.position = startPos;
         direction = dir;
 
         rigidBody.velocity = direction.normalized * moveSpeed;

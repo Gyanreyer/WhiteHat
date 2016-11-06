@@ -202,14 +202,11 @@ public class CameraAI : MonoBehaviour
         }
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
-<<<<<<< HEAD
         //set view mesh color
         /*if (enemyMan.GetComponent<EnemyManager>().AlertState == EnemyManager.AlertStates.Alarmed)
         {
 
         }*/
-=======
->>>>>>> origin/master
     }
     #endregion
 
@@ -223,8 +220,8 @@ public class CameraAI : MonoBehaviour
         }
 
         fireTime = 0;
-        GameObject bullet = (GameObject)Instantiate(bulletPrefab,transform.position,Quaternion.identity);
-        bullet.GetComponent<Bullet>().setUp(transform.position,vecToPlayer);
+        GameObject bullet = (GameObject)Instantiate(bulletPrefab,transform.position-new Vector3(0,0,2),Quaternion.identity);
+        bullet.GetComponent<Bullet>().setUp(vecToPlayer);
 
     }
 }
