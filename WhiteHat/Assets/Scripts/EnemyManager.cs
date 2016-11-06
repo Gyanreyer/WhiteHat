@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class EnemyManager : MonoBehaviour {
 
@@ -19,6 +20,8 @@ public class EnemyManager : MonoBehaviour {
     //Arrays to hold enemies
     private GameObject[] cameras;
     private GameObject[] robots;
+    //Reference to the canvas
+    private Text canvasText;
     //States for alert phase
     public enum AlertStates
     {
@@ -50,6 +53,8 @@ public class EnemyManager : MonoBehaviour {
         {
             c.GetComponent<CameraAI>().TimeToAlert = spotTimeToAlert;
         }
+        //get ref to canvas text object
+        canvasText = GameObject.Find("Canvas").transform.GetChild(0).gameObject.GetComponent<Text>();
 	}
 	
 	// Update is called once per frame
@@ -70,7 +75,8 @@ public class EnemyManager : MonoBehaviour {
 
     private void ManagePatrol()
     {
-
+        //revert canvas text
+        canvasText.text = "";
     }
 
     private void ManageAlarmed()
@@ -87,6 +93,8 @@ public class EnemyManager : MonoBehaviour {
             alertState = AlertStates.Searching;
             //
         }
+        //Update canvas text
+        canvasText.text = "ALARMED\n" + (alarmTime - currentTimeInAlarm).ToString("F1");
     }
 
     private void ManageSearching()
@@ -101,17 +109,18 @@ public class EnemyManager : MonoBehaviour {
             currentTimeInSearching = 0;
             //switch to patrol state
             alertState = AlertStates.Patrol;
-            //
         }
+        //Update canvas text
+        canvasText.text = "SEARCHING\n" + (searchTime - currentTimeInSearching).ToString("F1");
     }
 
     public void TriggerAlarm()
     {
-        //Debug.Log("CONTACT!");//DEBUG//
         //Trigger the alarm state
         alertState = AlertStates.Alarmed;
+        //reset timer
+        currentTimeInAlarm = 0;
         //Update last known location
         lastKnownLoc = playerObj.transform.position;
-        //reset 
     }
 }

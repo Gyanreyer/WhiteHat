@@ -122,10 +122,8 @@ public class CameraAI : MonoBehaviour
         //increase time staring at player, modified inversely by distance
         spottingTime += Time.deltaTime / forwardDot;
         //check to see if you should trigger an alarm
-        if (spottingTime >= timeToAlert)
-        {
+        if (spottingTime >= timeToAlert || enemyMan.AlertState == EnemyManager.AlertStates.Alarmed || enemyMan.AlertState == EnemyManager.AlertStates.Searching) 
             enemyMan.TriggerAlarm();
-        }
         //check to see if we should rotate based on angle to player
         if (Vector3.Angle(vecToPlayer, this.transform.up) > rotationSpeed)
         {
