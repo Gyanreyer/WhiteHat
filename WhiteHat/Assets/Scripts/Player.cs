@@ -9,6 +9,8 @@ public class Player : MonoBehaviour {
 
     private Vector2 velocity;
 
+    private float lerpTime = 0;
+
 	// Use this for initialization
 	void Start () {
         mainCamera = Camera.main;
@@ -18,7 +20,20 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
-        velocity = new Vector3(Input.GetAxis("Horizontal"),Input.GetAxis("Vertical"),0).normalized*moveSpeed;
+        velocity = new Vector2(Input.GetAxis("Horizontal"),Input.GetAxis("Vertical")).normalized*moveSpeed;
+
+        if(velocity == Vector2.zero)
+        {
+            lerpTime += Time.deltaTime;
+        }
+        else
+        {
+            lerpTime = .1f;
+        }
+
+        
+
+        mainCamera.transform.position=  Vector3.Lerp(mainCamera.transform.position,transform.position - new Vector3(0,0,10),lerpTime);
 
         //Rotate to face mouse
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y,0));

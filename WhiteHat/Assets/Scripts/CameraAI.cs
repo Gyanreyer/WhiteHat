@@ -176,10 +176,10 @@ public class CameraAI : MonoBehaviour
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
         //set view mesh color
-        if (enemyMan.GetComponent<EnemyManager>().AlertState == EnemyManager.AlertStates.Alarmed)
+        /*if (enemyMan.GetComponent<EnemyManager>().AlertState == EnemyManager.AlertStates.Alarmed)
         {
 
-        }
+        }*/
     }
     #endregion
 
