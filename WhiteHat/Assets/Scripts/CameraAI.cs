@@ -6,7 +6,7 @@ public class CameraAI : MonoBehaviour
     #region Public Fields
     [Tooltip("Minimum rotation - the camera won't go past this when tracking the player")]
     public float minRot = 0f;
-    [Tooltip("Maximum rotation - the camera also won't go past this")]
+    [Tooltip("Maximum rotation - the camera also won't go past this. MUST BE GREATER THAN MIN ROT")]
     public float maxRot = 90f;
     [Tooltip("Speed that the camera will rotate")]
     public float rotationSpeed = 2f;
