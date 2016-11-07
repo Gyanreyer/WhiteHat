@@ -28,12 +28,15 @@ public class Player : MonoBehaviour {
 
     public Sprite deathSprite;
 
+    public GameObject deathPartSys;
+
 	// Use this for initialization
 	void Start () {
         mainCamera = Camera.main;
         rigidBody = GetComponent<Rigidbody2D>();
 
         legs = GameObject.Find("Legs");
+
 	}
 	
 	// Update is called once per frame
@@ -99,6 +102,7 @@ public class Player : MonoBehaviour {
         }
     }
 
+    //Update animation/visual state of player based on their current state, always call when changing player state - should probably just make a method that changes the state with a parameter for desired state, on todo list
     void UpdateAnimationState()
     {
         if(state == PlayerState.idle)
@@ -111,13 +115,17 @@ public class Player : MonoBehaviour {
         }
         else if(state == PlayerState.dead)
         {
-            legs.SetActive(false);
-            GetComponent<SpriteRenderer>().sprite = deathSprite;
+            legs.SetActive(false);//Disable legs so they don't display anymore
+            GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
 
-            rigidBody.isKinematic = true;
+            rigidBody.isKinematic = true;//Disable physics and stop the player's movement
             velocity = Vector2.zero;
 
-            gameObject.layer = 0;
+            gameObject.layer = 0;//Change layer so camera won't keep shooting
+
+            GameObject newPartSys = (GameObject)Instantiate(deathPartSys,transform.position,Quaternion.identity);//Spawn new instance of death part sys
+
+            newPartSys.transform.eulerAngles = new Vector3(-90,0,transform.eulerAngles.z);//Set rotation of death part sys to what it needs to be
         }
     }
 
