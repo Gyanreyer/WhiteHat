@@ -11,6 +11,8 @@ public class EnemyManager : MonoBehaviour {
     public float alarmTime = 10f;
     [Tooltip("Duration of the search phase once the alarm triggers, in seconds.")]
     public float searchTime = 10f;
+    [Tooltip("Constant added each frame while the player is in view of cameras.")]
+    public float spotTimeAddedConstant = 0.004f;
     #endregion
     #region Private Fields
     //Reference to the player
@@ -39,6 +41,8 @@ public class EnemyManager : MonoBehaviour {
     #region Properties
     public AlertStates AlertState
     { get { return alertState; } }
+    public float SpotTimeAddedConstant
+    {get { return spotTimeAddedConstant; } }
     #endregion
 
     // Use this for initialization

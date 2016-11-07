@@ -93,7 +93,8 @@ public class CameraAI : MonoBehaviour
                 break;
             case CameraStates.Following:
                 Follow();
-                ShootPlayer();
+                //Shoot if alarmed
+                if (enemyMan.AlertState == EnemyManager.AlertStates.Alarmed) ShootPlayer();
                 break;
         }
         //Check for LoS
@@ -120,7 +121,7 @@ public class CameraAI : MonoBehaviour
         //Get forward dot for distance
         float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
         //increase time staring at player, modified inversely by distance
-        spottingTime += Time.deltaTime / forwardDot;
+        spottingTime += (Time.deltaTime / forwardDot) + enemyMan.SpotTimeAddedConstant;
         //check to see if you should trigger an alarm
         if (spottingTime >= timeToAlert || enemyMan.AlertState == EnemyManager.AlertStates.Alarmed || enemyMan.AlertState == EnemyManager.AlertStates.Searching) 
             enemyMan.TriggerAlarm();
@@ -200,11 +201,6 @@ public class CameraAI : MonoBehaviour
         }
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
-        //set view mesh color
-        /*if (enemyMan.GetComponent<EnemyManager>().AlertState == EnemyManager.AlertStates.Alarmed)
-        {
-
-        }*/
     }
     #endregion
 
