@@ -63,6 +63,7 @@ public class CameraAI : MonoBehaviour
         enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
         render = this.transform.GetChild(0).GetComponent<Renderer>();
         render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+        totalRotation = minRot;
 
         fov = GetComponent<FieldOfView>();
     }
