@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Bullet : MonoBehaviour {
 
-    private Vector3 direction;
+    public Vector3 direction;
     public float moveSpeed;
 
     private Rigidbody2D rigidBody;

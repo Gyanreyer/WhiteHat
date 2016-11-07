@@ -1,12 +1,22 @@
 Base path: D:/Program Files/Unity/Editor/Data
 Cmd: getPlatforms
 Cmd: preprocess
-  insize=1960 outsize=887 ok=1
+  insize=1961 outsize=887 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=855 outsize=566 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=855 outsize=682 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at Functions.cginc(45): unknown attribute maxvertexcount, or attribute invalid for this statement\nCompiling Geometry program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=4 insize=855 outsize=1294 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
 Cmd: preprocess
-  error: 2 plat 18 at (23): Can't find include file UCLA GameLab Wireframe Functions.cginc
-  insize=1095 outsize=469 ok=0
-Cmd: preprocess
-  error: 2 plat 18 at (22): Can't find include file UCLA GameLab Wireframe Functions.cginc
-  insize=1083 outsize=456 ok=0
-Cmd: preprocess
-  insize=1009 outsize=473 ok=1
+  insize=1010 outsize=473 ok=1
+Cmd: compileSnippet
+  api=4 type=0 insize=855 outsize=566 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  api=4 type=1 insize=855 outsize=682 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
+Cmd: compileSnippet
+  error: 1 plat 4 at Functions.cginc(45): unknown attribute maxvertexcount, or attribute invalid for this statement\nCompiling Geometry program
+Platform defines: UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING
+  api=4 type=4 insize=855 outsize=1294 kw= pd=UNITY_ENABLE_REFLECTION_BUFFERS UNITY_PBS_USE_BRDF1 UNITY_SPECCUBE_BOX_PROJECTION UNITY_SPECCUBE_BLENDING ok=1
