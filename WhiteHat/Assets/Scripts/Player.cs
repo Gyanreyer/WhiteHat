@@ -11,6 +11,10 @@ public class Player : MonoBehaviour {
     }
 
     public float moveSpeed = 5;
+
+    [Tooltip("How far the player will be able to scroll the camera.")]
+    public float maxCameraPanDist = 5f;
+
     private Camera mainCamera;
     private Rigidbody2D rigidBody;
 
@@ -56,8 +60,8 @@ public class Player : MonoBehaviour {
                 state = PlayerState.running;
         }
 
-
-        mainCamera.transform.position=  Vector3.Lerp(mainCamera.transform.position,transform.position - new Vector3(0,0,10),lerpTime);
+        //Move camera to player, adds panning as well
+        mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, transform.position + new Vector3(Map(Input.mousePosition.x, 0, Screen.width, -maxCameraPanDist, maxCameraPanDist), Map(Input.mousePosition.y, 0, Screen.height, -maxCameraPanDist, maxCameraPanDist), -10), lerpTime);
 
         //Rotate to face mouse
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,Input.mousePosition.y,0));
@@ -87,4 +91,10 @@ public class Player : MonoBehaviour {
             
         }
     }
+
+    /// <summary>
+    /// Remapping function. Maybe move to a static helper methods class? Not sure if we'll need that though.
+    /// </summary>
+    private float Map(float value, float fromSource, float toSource, float fromTarget, float toTarget)
+    { return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget; }
 }
