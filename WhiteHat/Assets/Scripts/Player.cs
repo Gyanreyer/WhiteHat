@@ -136,7 +136,7 @@ public class Player : MonoBehaviour {
 
             GameObject newPartSys = (GameObject)Instantiate(deathPartSys,transform.position,Quaternion.identity);//Spawn new instance of death part sys
 
-            newPartSys.transform.eulerAngles = new Vector3(-90,0,transform.eulerAngles.z);//Set rotation of death part sys to what it needs to be
+            newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
             Invoke("BackToMenu", 2);
         }

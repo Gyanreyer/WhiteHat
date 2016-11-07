@@ -8,7 +8,7 @@ public class ParticleSystem : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         Destroy(gameObject, lifeTime);
-        transform.eulerAngles += new Vector3(-90,0,0);
+        transform.eulerAngles += new Vector3(0,90,0);
 	}
 	
 }
