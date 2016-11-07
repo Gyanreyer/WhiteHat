@@ -1,2 +1,12 @@
 Base path: D:/Program Files/Unity/Editor/Data
 Cmd: getPlatforms
+Cmd: preprocess
+  insize=1960 outsize=887 ok=1
+Cmd: preprocess
+  error: 2 plat 18 at (23): Can't find include file UCLA GameLab Wireframe Functions.cginc
+  insize=1095 outsize=469 ok=0
+Cmd: preprocess
+  error: 2 plat 18 at (22): Can't find include file UCLA GameLab Wireframe Functions.cginc
+  insize=1083 outsize=456 ok=0
+Cmd: preprocess
+  insize=1009 outsize=473 ok=1

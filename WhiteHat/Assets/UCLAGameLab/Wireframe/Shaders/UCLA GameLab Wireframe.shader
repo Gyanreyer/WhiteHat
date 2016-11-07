@@ -1,4 +1,4 @@
-Shader "UCLA Game Lab/Wireframe/Double-Sided Cutout" 
+Shader "UCLA Game Lab/Wireframe/Single-Sided" 
 {
 	Properties 
 	{
@@ -11,10 +11,10 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided Cutout"
 	{
 		Pass
 		{
-			Tags { "RenderType"="Opaque" "Queue"="Geometry" }
+			Tags { "RenderType"="Transparent" "Queue"="Transparent" }
 
-			Blend SrcAlpha OneMinusSrcAlpha
-			Cull Off
+			Blend SrcAlpha OneMinusSrcAlpha 
+			ZWrite Off
 			LOD 200
 			
 			CGPROGRAM
@@ -41,11 +41,7 @@ Shader "UCLA Game Lab/Wireframe/Double-Sided Cutout"
 				// Fragment Shader
 				float4 frag(UCLAGL_g2f input) : COLOR
 				{	
-					float4 col = UCLAGL_frag(input);
-					if( col.a < 0.5f ) discard;
-					else col.a = 1.0f;
-					
-					return col;
+					return UCLAGL_frag(input);
 				}
 			
 			ENDCG

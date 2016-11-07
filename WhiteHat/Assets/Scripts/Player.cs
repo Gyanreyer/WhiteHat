@@ -22,12 +22,15 @@ public class Player : MonoBehaviour {
 
     private PlayerState state;
 
+    private Animator anim;
+
 	// Use this for initialization
 	void Start () {
         mainCamera = Camera.main;
         rigidBody = GetComponent<Rigidbody2D>();
 
         legs = GameObject.Find("Legs");
+        anim = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -41,13 +44,18 @@ public class Player : MonoBehaviour {
         if(velocity == Vector2.zero)
         {
             lerpTime += Time.deltaTime;
+
+            if(state == PlayerState.running)
+                state = PlayerState.idle;
         }
         else
         {
             lerpTime = .1f;
+
+            if (state == PlayerState.idle)
+                state = PlayerState.running;
         }
 
-        
 
         mainCamera.transform.position=  Vector3.Lerp(mainCamera.transform.position,transform.position - new Vector3(0,0,10),lerpTime);
 
@@ -67,8 +75,15 @@ public class Player : MonoBehaviour {
         //If got hit by a bullet, die
         if (other.gameObject.tag == "Bullet")
         {
-            Debug.Log("Player Died");
+            state = PlayerState.dead;
+            legs.SetActive(false);
+        }
+    }
 
+    void UpdateAnimationState()
+    {
+        if(state == PlayerState.idle)
+        {
             
         }
     }
