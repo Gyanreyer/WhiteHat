@@ -76,6 +76,7 @@ public class Player : MonoBehaviour {
 
 	}
 
+    //Updates physics
     void FixedUpdate()
     {
         rigidBody.velocity = velocity;
