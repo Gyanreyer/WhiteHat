@@ -111,6 +111,7 @@ public class Player : MonoBehaviour {
             GetComponent<SpriteRenderer>().sprite = deathSprite;
 
             rigidBody.isKinematic = true;
+            velocity = Vector2.zero;
 
             gameObject.layer = 0;
         }
