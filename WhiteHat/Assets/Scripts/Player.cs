@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour {
 
-    public enum PlayerState
+    enum PlayerState
     {
         idle,
         running,
@@ -26,11 +26,13 @@ public class Player : MonoBehaviour {
 
     private float lerpTime = 0;
 
-    public PlayerState state;
+    private PlayerState state;
 
     public Sprite deathSprite;
 
     public GameObject deathPartSys;
+
+    public Ability activeAbility;
 
 	// Use this for initialization
 	void Start () {
@@ -47,8 +49,10 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
+            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 2: 1);
+
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
-            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * moveSpeed;
+            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
             legs.transform.position = transform.position + new Vector3(0, 0, 1);
@@ -108,7 +112,7 @@ public class Player : MonoBehaviour {
     {
         if (other.gameObject.tag == "Floppy")
         {
-            GameObject.Find("Canvas").transform.FindChild("Text").GetComponent<Text>().text = "You win!";
+            GameObject.Find("WinText").GetComponent<Text>().text = "You win!";
             Invoke("BackToMenu", 2);
         }
     }
@@ -145,6 +149,19 @@ public class Player : MonoBehaviour {
     private void BackToMenu()
     {
         SceneManager.LoadScene(0);
+    }
+
+    //Get an ability from a terminal
+    public void AddActiveAbility(Ability actAb)
+    {
+        activeAbility = actAb;
+    }
+
+    //Use ability
+    public void UseAbility()
+    {
+        if(activeAbility != null)
+            activeAbility.Use();
     }
 
     /// <summary>

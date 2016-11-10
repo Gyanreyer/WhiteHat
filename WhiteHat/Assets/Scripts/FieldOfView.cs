@@ -31,7 +31,7 @@ public class FieldOfView : MonoBehaviour {
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;
 
-        StartCoroutine("FindTargetsWithDelay",.2f);
+        //StartCoroutine("FindTargetsWithDelay",.1f);
     }
     void LateUpdate()
     {
@@ -48,7 +48,10 @@ public class FieldOfView : MonoBehaviour {
         }
     }
 
-
+    void Update()
+    {
+        FindVisibleTargets();
+    }
 
     //Loop through targets that are within radius and see if they're visible within view arc
     void FindVisibleTargets()
@@ -64,10 +67,11 @@ public class FieldOfView : MonoBehaviour {
             Transform player = targetInViewRadius.transform;
             Vector3 dirToPlayer = (player.position - transform.position).normalized;
 
-            //Not 100% sure how transform.forward will work with 2D, guess we'll find out
-            if (Vector3.Angle(transform.up, dirToPlayer) < viewAngle / 2)
+            if (Vector2.Angle(transform.up, dirToPlayer) < viewAngle / 2)
             {
                 float distToPlayer = Vector3.Distance(transform.position, player.position);//Could be used for alert level
+
+                Debug.DrawRay(transform.position,dirToPlayer*distToPlayer);
 
                 //Send out a raycast to player, if it didn't hit an obstacle then they're officially within view
                 if (!Physics2D.Raycast(transform.position, dirToPlayer, distToPlayer, obstacleMask))
