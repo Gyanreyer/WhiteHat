@@ -3,6 +3,20 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum ActiveAbilities
+{
+    none,
+    invisible,
+    dash
+}
+
+public enum PassiveAbilities
+{
+    addSpeed,
+    addDetectionResisitance
+}
+
+
 public class Player : MonoBehaviour {
 
     enum PlayerState
@@ -32,7 +46,15 @@ public class Player : MonoBehaviour {
 
     public GameObject deathPartSys;
 
-    public Ability activeAbility;
+    public ActiveAbilities activeAbility;
+    public PassiveAbilities passiveAbility;
+
+    private float percentActiveLeft = 0;//100 is full
+    private bool isAbilityActive = false;
+    private float activeBarDecreaseAmt = 0;
+
+    private SpriteRenderer bodySpriteRenderer, legsSpriteRenderer;
+
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +62,9 @@ public class Player : MonoBehaviour {
         rigidBody = GetComponent<Rigidbody2D>();
 
         legs = GameObject.Find("Legs");
+
+        bodySpriteRenderer = GetComponent<SpriteRenderer>();
+        legsSpriteRenderer = legs.GetComponent<SpriteRenderer>();
 
 	}
 	
@@ -83,6 +108,17 @@ public class Player : MonoBehaviour {
                 UpdateAnimationState();
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            if (isAbilityActive)
+                DeactivateAbility();
+
+            else
+                UseAbility();
+        }
+
+        UpdateAbility();
 
         //update/pan camera
         mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, transform.position + new Vector3(Map(Input.mousePosition.x, 0, Screen.width, -maxCameraPanDist, maxCameraPanDist), Map(Input.mousePosition.y, 0, Screen.height, -maxCameraPanDist, maxCameraPanDist), -10), lerpTime);
@@ -152,17 +188,79 @@ public class Player : MonoBehaviour {
     }
 
     //Get an ability from a terminal
-    public void AddActiveAbility(Ability actAb)
+    public void AddActiveAbility(ActiveAbilities actAb, float durationOrNumUses)//useAmt is either number of uses or num uses
     {
         activeAbility = actAb;
+
+        percentActiveLeft = 100f;//Reset percent of active you can use
+
+        activeBarDecreaseAmt = 100/durationOrNumUses;
+
+        Debug.Log(activeAbility);
     }
 
     //Use ability
     public void UseAbility()
     {
-        if(activeAbility != null)
-            activeAbility.Use();
+        if (activeAbility == ActiveAbilities.none || percentActiveLeft <= 0) return;//Don't do anything if don't have an ability or it's used up  
+
+        switch(activeAbility)
+        {
+            case ActiveAbilities.invisible:
+                isAbilityActive = true;
+
+                gameObject.layer = 0;//Take off player layer so enemies can't see you
+
+                legsSpriteRenderer.color = new Color(1,1,1,.5f);
+                bodySpriteRenderer.color = new Color(1, 1, 1, .5f);//Make sprites semi-transparent
+                
+
+                break;
+
+            case ActiveAbilities.dash:
+                isAbilityActive = true;
+
+
+                break;
+        }
     }
+
+    private void DeactivateAbility()
+    {
+        isAbilityActive = false;//Deactive ability
+
+        switch (activeAbility)
+        {
+            case ActiveAbilities.invisible:
+
+                gameObject.layer = 8;
+
+                legsSpriteRenderer.color = new Color(1, 1, 1, 1);
+                bodySpriteRenderer.color = new Color(1, 1, 1, 1);
+
+                
+                break;
+
+            case ActiveAbilities.dash:
+
+
+                break;
+        }
+    }
+
+    private void UpdateAbility()
+    {
+        if (!isAbilityActive || activeAbility == ActiveAbilities.none) return;
+
+        percentActiveLeft -= activeBarDecreaseAmt * Time.deltaTime;//Decrease timer
+
+        //If used up, set active to false
+        if(percentActiveLeft <= 0)
+            DeactivateAbility();
+        
+
+    }
+
 
     /// <summary>
     /// Remapping function. Maybe move to a static helper methods class? Not sure if we'll need that though.

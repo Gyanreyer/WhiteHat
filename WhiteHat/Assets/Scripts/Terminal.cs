@@ -3,20 +3,25 @@ using System.Collections;
 
 public class Terminal : MonoBehaviour {
 
-    Ability thisAbility;
+    ActiveAbilities thisAbility;//Ability that this terminal gives
+
+    //Each float corresponds with ability at that index
+    private float[] ActiveAbilitiesUsesOrDuration = {
+        0,//None
+        5//,//Invisible, lasts 5 seconds
+        //5//Dash, lasts 5 seconds
+    };
 
     Player player;
 
     public float useRadius = 1f;
-    bool used;
 
+    
     // Use this for initialization
     void Start () { 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 
-        Ability[] abilities = { new Invisibility(player) };//Array of all possible abilities, should move to some kind of global manager
-
-        thisAbility = abilities[(int)Random.Range(0, abilities.Length)];//Pick a random ability from array
+        thisAbility = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
     }
 	
 	// Update is called once per frame
@@ -32,13 +37,12 @@ public class Terminal : MonoBehaviour {
     void Activate()
     {
         //Give ability to player
-        player.AddActiveAbility(thisAbility);
+        player.AddActiveAbility(thisAbility, ActiveAbilitiesUsesOrDuration[(int)thisAbility]);
 
-        used = true;
         //Other stuff to deactivate, change this terminal's sprite
         
 
-        Destroy(this);
+        Destroy(this);//Can't interact with this anymore ever because just deleting this script
     }
     
 }
