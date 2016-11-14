@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Terminal : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class Terminal : MonoBehaviour {
         //5//Dash, lasts 5 seconds
     };
 
+
     private bool abilityIsActive;
 
     private Animator spriteAnimator;
@@ -19,9 +21,12 @@ public class Terminal : MonoBehaviour {
     Player player;
 
     public float useRadius = 1f;
-    
+
+    public GameObject terminalPopup;
+    private bool inRange;
+
     // Use this for initialization
-    void Start () { 
+    void Awake () { 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         spriteAnimator = GetComponent<Animator>();
 
@@ -40,29 +45,63 @@ public class Terminal : MonoBehaviour {
             spriteAnimator.Play("blue");
         }
 
+        terminalPopup = GameObject.Find("TerminalPopup");//.GetComponent<Image>();
 
-            
+    }
+
+    void Start()
+    {
+        terminalPopup.SetActive(false);
     }
 	
 	// Update is called once per frame
 	void Update () {
         Vector2 vecToPlayer = player.transform.position - transform.position;
 
-        if(vecToPlayer.magnitude < useRadius && Input.GetKeyDown(KeyCode.E))
+        if (vecToPlayer.magnitude < useRadius)
         {
-            Activate();
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                //Give ability to player
+                player.AddActiveAbility(thisAbility, ActiveAbilitiesUsesOrDuration[(int)thisAbility]);
+
+                Disable();
+            }
+            else if(Input.GetKeyDown(KeyCode.R) && player.activeAbility != ActiveAbilities.none)
+            {
+                player.RechargeActiveAbility();
+
+                Disable();
+            }
+
+            if (!inRange)
+            {
+                terminalPopup.SetActive(true);
+                terminalPopup.GetComponent<TerminalPopup>().UpdatePosition();
+
+                inRange = true;
+            }
         }
+        else
+        {
+            if (inRange)
+            {
+                terminalPopup.SetActive(false);
+                inRange = false;
+            }
+        }
+
+        
 	}
 
-    void Activate()
-    {
-        //Give ability to player
-        player.AddActiveAbility(thisAbility, ActiveAbilitiesUsesOrDuration[(int)thisAbility]);
 
+    void Disable()
+    {
         //Change this terminal's sprite to indicate it's off
         spriteAnimator.Play("off");
 
+        terminalPopup.SetActive(false);
+
         Destroy(this);//Can't interact with this anymore ever because just deleting this script
     }
-    
 }

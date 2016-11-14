@@ -74,7 +74,7 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
-            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 2: 1);
+            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 1.5f: 1);
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
             velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
@@ -197,6 +197,12 @@ public class Player : MonoBehaviour {
         activeBarDecreaseAmt = 100/durationOrNumUses;
 
         Debug.Log(activeAbility);
+    }
+
+    //Recharge ability bar to full
+    public void RechargeActiveAbility()
+    {
+        percentActiveLeft = 100f;
     }
 
     //Use ability
