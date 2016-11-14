@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
     public ActiveAbilities activeAbility;
     public PassiveAbilities passiveAbility;
 
-    private float percentActiveLeft = 0;//100 is full
+    public float percentActiveLeft = 0;//100 is full
     private bool isAbilityActive = false;
     private float activeBarDecreaseAmt = 0;
 
@@ -197,6 +197,12 @@ public class Player : MonoBehaviour {
         activeBarDecreaseAmt = 100/durationOrNumUses;
 
         Debug.Log(activeAbility);
+    }
+
+    //Recharge ability bar to full
+    public void RechargeActiveAbility()
+    {
+        percentActiveLeft = 100f;
     }
 
     //Use ability
