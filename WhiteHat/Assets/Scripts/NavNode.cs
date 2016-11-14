@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEditor;//REMOVE THIS WHEN DONE WITH THE DRAW GIZMOS THING
 using System.Collections;
 using System.Collections.Generic;
 
@@ -49,7 +48,7 @@ public class NavNode : MonoBehaviour {
     {
         Gizmos.color = Color.magenta;
         foreach (GameObject n in neighbors)
-            Gizmos.DrawLine(this.transform.position, n.transform.position);
+            Debug.DrawLine(this.transform.position, n.transform.position);
     }
     #endregion
 }
