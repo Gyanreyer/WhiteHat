@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 using UnityEditor;
 
 /// <summary>
@@ -11,4 +11,4 @@ public class NameInEditor : Editor
     {
         Handles.Label(transform.position, transform.gameObject.name);
     }
-}
+}*/
