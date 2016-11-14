@@ -12,16 +12,36 @@ public class Terminal : MonoBehaviour {
         //5//Dash, lasts 5 seconds
     };
 
+    private bool abilityIsActive;
+
+    private Animator spriteAnimator;
+
     Player player;
 
     public float useRadius = 1f;
-
     
     // Use this for initialization
     void Start () { 
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        spriteAnimator = GetComponent<Animator>();
 
-        thisAbility = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
+        //Determine whether ability is active or passive, for now don't worry about it
+        //abilityIsActive = Random.value <= .5f;
+        abilityIsActive = true;
+
+        if (abilityIsActive)
+        {
+            thisAbility = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
+            spriteAnimator.Play("orange");
+        }
+        else
+        {
+            //Blah blah blah, figure out later but make ability passive
+            spriteAnimator.Play("blue");
+        }
+
+
+            
     }
 	
 	// Update is called once per frame
@@ -39,8 +59,8 @@ public class Terminal : MonoBehaviour {
         //Give ability to player
         player.AddActiveAbility(thisAbility, ActiveAbilitiesUsesOrDuration[(int)thisAbility]);
 
-        //Other stuff to deactivate, change this terminal's sprite
-        
+        //Change this terminal's sprite to indicate it's off
+        spriteAnimator.Play("off");
 
         Destroy(this);//Can't interact with this anymore ever because just deleting this script
     }
