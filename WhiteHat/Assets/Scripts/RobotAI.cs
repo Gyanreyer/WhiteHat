@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class RobotAI : Vehicle {
 
@@ -62,10 +61,17 @@ public class RobotAI : Vehicle {
     public GameObject bulletPrefab;
     //Shots per second
     public float fireRate;
-
+    //current fire time
     private float fireTime = 0f;
+    //temporary thing for making inspecting not look stupid
+    private Vector3 addedOffsetPoint = Vector3.zero;
     #endregion
-
+    #region Properties
+    public float TimeToAlert
+    {
+        set { timeToAlert = value; }
+    }
+    #endregion
     #region Unity Defaults
     override public void Start()
     {
@@ -98,6 +104,16 @@ public class RobotAI : Vehicle {
         //Seek the player if you can see him, attack if you're alerted
         if (fov.playerVisible)
         {
+            //store the vec to the player
+            vecToPlayer = playerObj.transform.position - this.gameObject.transform.position;
+            //Get forward dot for distance
+            float forwardDot = Vector3.Dot(this.transform.up, vecToPlayer);
+            //increase time staring at player, modified inversely by distance
+            spottingTime += (Time.deltaTime / forwardDot) + enemyMan.SpotTimeAddedConstant;
+            //check to see if you should trigger an alarm
+            if (spottingTime >= timeToAlert || enemyMan.AlertState == EnemyManager.AlertStates.Alarmed || enemyMan.AlertState == EnemyManager.AlertStates.Searching)
+                enemyMan.TriggerAlarm();
+            //seek the player
             force += Seek(new Vector2(playerObj.transform.position.x, playerObj.transform.position.y));
             //Update state based on alert state
             switch (enemyMan.AlertState)
@@ -107,6 +123,8 @@ public class RobotAI : Vehicle {
                     inspectPoint = new Vector2(playerObj.transform.position.x, playerObj.transform.position.y);
                     break;
                 case EnemyManager.AlertStates.Alarmed:
+                    //Update last known loc
+                    enemyMan.LastKnownLocation = playerObj.transform.position;
                     robotState = RobotStates.Hunting;
                     break;
                 case EnemyManager.AlertStates.Searching:
@@ -116,24 +134,35 @@ public class RobotAI : Vehicle {
         }
         else//if you don't see the player, either patrol or search for the player if alerted
         {
-            if (enemyMan.AlertState == EnemyManager.AlertStates.Patrol)
+            //reset spotting time
+            spottingTime = 0;
+            //if (robotState == RobotStates.Inspecting)
+                //robotState == RobotStates.Patroling;
+            //Update state based on alert state
+            switch (enemyMan.AlertState)
             {
-                //Need to recover if you go off the path
-                if (robotState == RobotStates.Inspecting)
-                {
-                    //now we're on the recovery path...
-                    recovering = true;
-                    //need to find closest node
-                    recoveryRoute = enemyMan.GenerateAStarPath(enemyMan.FindClosestNode(this.transform.position).GetComponent<NavNode>(), patrolRoute[currentNodeIndex].GetComponent<NavNode>());
-                    if (recoveryRoute.Length != 0)
-                        currentRecoveryNode = recoveryRoute[0];
-                    else
-                        recovering = false; //NOTE: this is a hacky solution to what may be an issue with the AStar class. Still working on it...
-                }
-                robotState = RobotStates.Patroling;
+                case EnemyManager.AlertStates.Patrol:
+                    //Need to recover if you go off the path
+                    if (robotState == RobotStates.Inspecting)
+                    {
+                        //now we're on the recovery path...
+                        recovering = true;
+                        //need to find closest node
+                        recoveryRoute = enemyMan.GenerateAStarPath(enemyMan.FindClosestNode(this.transform.position).GetComponent<NavNode>(), patrolRoute[currentNodeIndex].GetComponent<NavNode>());
+                        if (recoveryRoute.Length != 0)
+                            currentRecoveryNode = recoveryRoute[0];
+                        else
+                            recovering = false; //NOTE: this is a hacky solution to what may be an issue with the AStar class. Still working on it...
+                    }
+                    robotState = RobotStates.Patroling;
+                    break;
+                case EnemyManager.AlertStates.Alarmed:
+                    robotState = RobotStates.Hunting;
+                    break;
+                case EnemyManager.AlertStates.Searching:
+                    robotState = RobotStates.Searching;
+                    break;
             }
-            else
-                robotState = RobotStates.Searching;
         }
         //Handle states
         switch (robotState)
@@ -170,15 +199,21 @@ public class RobotAI : Vehicle {
 
     private void HandleSearching()
     {
-
+        //THIS IS GONNA BE REDONE
+        force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
+        if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
+            addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
     }
 
     private void HandleHunting()
     {
-        //Seek player
-        force += Seek(new Vector2(playerObj.transform.position.x, playerObj.transform.position.y));
-        //Shoot player
-        ShootPlayer();
+        //Seek last known location
+        force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
+        if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
+            addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
+        //Shoot player if within sight range
+        if (fov.playerVisible)
+            ShootPlayer();
     }
 
     private void HandlePatroling()
@@ -273,7 +308,7 @@ public class RobotAI : Vehicle {
         }
 
         fireTime = 0;
-        GameObject bullet = (GameObject)Instantiate(bulletPrefab, transform.position - new Vector3(0, 0, 2), Quaternion.identity);
+        GameObject bullet = (GameObject)Instantiate(bulletPrefab, this.transform.position + (this.transform.up * 2), Quaternion.identity);
         bullet.GetComponent<Bullet>().setUp(vecToPlayer);
 
     }

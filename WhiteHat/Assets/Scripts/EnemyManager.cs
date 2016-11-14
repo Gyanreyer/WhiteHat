@@ -47,6 +47,8 @@ public class EnemyManager : MonoBehaviour {
     { get { return alertState; } }
     public float SpotTimeAddedConstant
     {get { return spotTimeAddedConstant; } }
+    public Vector3 LastKnownLocation
+    { get { return lastKnownLoc; } set { lastKnownLoc = value; } }
     #endregion
 
     #region Unity Defaults
@@ -60,12 +62,13 @@ public class EnemyManager : MonoBehaviour {
         robots = GameObject.FindGameObjectsWithTag("RobotAI");
         //set their spot time
         foreach(GameObject c in cameras)
-        {
             c.GetComponent<CameraAI>().TimeToAlert = spotTimeToAlert;
-        }
+        foreach (GameObject r in robots)
+            r.GetComponent<RobotAI>().TimeToAlert = spotTimeToAlert;
         //get ref to canvas text object
         canvasText = GameObject.Find("Canvas").transform.GetChild(0).gameObject.GetComponent<Text>();
         aStar = new AStarGraph(); // I guess you don't need this because Unity automatically constructs objects?
+        lastKnownLoc = Vector3.zero;
 	}
 	
 	// Update is called once per frame

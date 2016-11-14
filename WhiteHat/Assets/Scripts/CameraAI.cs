@@ -96,6 +96,8 @@ public class CameraAI : MonoBehaviour
                 Follow();
                 //Shoot if alarmed
                 if (enemyMan.AlertState == EnemyManager.AlertStates.Alarmed) ShootPlayer();
+                //also update last known loc
+                enemyMan.LastKnownLocation = playerObj.transform.position;
                 break;
         }
         //Check for LoS

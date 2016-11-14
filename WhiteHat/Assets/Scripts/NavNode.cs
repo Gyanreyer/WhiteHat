@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEditor;
+using UnityEditor;//REMOVE THIS WHEN DONE WITH THE DRAW GIZMOS THING
 using System.Collections;
 using System.Collections.Generic;
 
@@ -42,11 +42,14 @@ public class NavNode : MonoBehaviour {
         walkable = true;
     }
 
-    void Update()
+    /// <summary>
+    /// Super duper helpful for setting up AI paths. Comment out if it bothers you.
+    /// </summary>
+    void OnDrawGizmos()
     {
-        //DEBUG//
-        foreach(GameObject n in neighbors)
-            Debug.DrawLine(this.transform.position, n.transform.position, Color.green);
+        Gizmos.color = Color.magenta;
+        foreach (GameObject n in neighbors)
+            Gizmos.DrawLine(this.transform.position, n.transform.position);
     }
     #endregion
 }
