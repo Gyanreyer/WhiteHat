@@ -54,6 +54,7 @@ public class Player : MonoBehaviour {
     private float activeBarDecreaseAmt = 0;
 
     private SpriteRenderer bodySpriteRenderer, legsSpriteRenderer;
+    private TrailRenderer dashTrail;
 
 
 	// Use this for initialization
@@ -66,6 +67,8 @@ public class Player : MonoBehaviour {
         bodySpriteRenderer = GetComponent<SpriteRenderer>();
         legsSpriteRenderer = legs.GetComponent<SpriteRenderer>();
 
+        dashTrail = legs.GetComponent<TrailRenderer>();
+        dashTrail.enabled = false;
 	}
 	
 	// Update is called once per frame
@@ -74,10 +77,10 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
-            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 1.5f: 1);
+            //float speed = moveSpeed;// * (Input.GetKey(KeyCode.LeftShift) ? 1.5f: 1);
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
-            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
+            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * moveSpeed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
             legs.transform.position = transform.position + new Vector3(0, 0, 1);
@@ -153,34 +156,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    //Update animation/visual state of player based on their current state, always call when changing player state - should probably just make a method that changes the state with a parameter for desired state, on todo list
-    void UpdateAnimationState()
-    {
-        if(state == PlayerState.idle)
-        {
-            legs.GetComponent<Animator>().Play("idle");
-        }
-        else if(state == PlayerState.running)
-        {
-            legs.GetComponent<Animator>().Play("run");
-        }
-        else if(state == PlayerState.dead)
-        {
-            legs.SetActive(false);//Disable legs so they don't display anymore
-            GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
 
-            rigidBody.isKinematic = true;//Disable physics and stop the player's movement
-            velocity = Vector2.zero;
-
-            gameObject.layer = 0;//Change layer so camera won't keep shooting
-
-            GameObject newPartSys = (GameObject)Instantiate(deathPartSys,transform.position,Quaternion.identity);//Spawn new instance of death part sys
-
-            newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
-
-            Invoke("BackToMenu", 2);
-        }
-    }
 
     private void BackToMenu()
     {
@@ -226,7 +202,8 @@ public class Player : MonoBehaviour {
             case ActiveAbilities.dash:
                 isAbilityActive = true;
 
-
+                moveSpeed *= 2;
+                dashTrail.enabled = true;
                 break;
         }
     }
@@ -248,8 +225,8 @@ public class Player : MonoBehaviour {
                 break;
 
             case ActiveAbilities.dash:
-
-
+                moveSpeed /= 2;
+                dashTrail.enabled = false;
                 break;
         }
     }
@@ -267,10 +244,39 @@ public class Player : MonoBehaviour {
 
     }
 
-
     /// <summary>
     /// Remapping function. Maybe move to a static helper methods class? Not sure if we'll need that though.
     /// </summary>
     private float Map(float value, float fromSource, float toSource, float fromTarget, float toTarget)
     { return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget; }
+
+
+    //Update animation/visual state of player based on their current state, always call when changing player state - should probably just make a method that changes the state with a parameter for desired state, on todo list
+    void UpdateAnimationState()
+    {
+        if (state == PlayerState.idle)
+        {
+            legs.GetComponent<Animator>().Play("idle");
+        }
+        else if (state == PlayerState.running)
+        {
+            legs.GetComponent<Animator>().Play("run");
+        }
+        else if (state == PlayerState.dead)
+        {
+            legs.SetActive(false);//Disable legs so they don't display anymore
+            GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
+
+            rigidBody.isKinematic = true;//Disable physics and stop the player's movement
+            velocity = Vector2.zero;
+
+            gameObject.layer = 0;//Change layer so camera won't keep shooting
+
+            GameObject newPartSys = (GameObject)Instantiate(deathPartSys, transform.position, Quaternion.identity);//Spawn new instance of death part sys
+
+            newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
+
+            Invoke("BackToMenu", 2);
+        }
+    }
 }

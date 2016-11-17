@@ -10,8 +10,8 @@ public class Terminal : MonoBehaviour
     //Each float corresponds with ability at that index
     private float[] ActiveAbilitiesUsesOrDuration = {
         0,//None
-        5//,//Invisible, lasts 5 seconds
-        //5//Dash, lasts 5 seconds
+        3,//Invisible, lasts 5 seconds
+        3//Dash, lasts 5 seconds
     };
 
 
