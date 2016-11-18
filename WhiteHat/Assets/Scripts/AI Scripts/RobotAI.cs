@@ -44,7 +44,7 @@ public class RobotAI : Vehicle {
     //Time spent staring at the player
     private float spottingTime = 0f;
     //Path that will be generated via A-star when the robot goes off-course looking for the player
-    private GameObject[] recoveryRoute;
+    public GameObject[] recoveryRoute;
     //Bool that will be on when recovering from going off the patrol route
     private bool recovering = false;
     //The current index in the path
@@ -142,8 +142,8 @@ public class RobotAI : Vehicle {
             switch (enemyMan.AlertState)
             {
                 case EnemyManager.AlertStates.Patrol:
-                    //Need to recover if you go off the path
-                    if (robotState == RobotStates.Inspecting)
+                    //Need to recover if you were searching for the player
+                    if (robotState == RobotStates.Searching)
                     {
                         //now we're on the recovery path...
                         recovering = true;
@@ -195,6 +195,7 @@ public class RobotAI : Vehicle {
         else
             render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
         //avoid walls
+        //force += WallFollow();
     }
 
     private void HandleSearching()
@@ -203,6 +204,8 @@ public class RobotAI : Vehicle {
         force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
         if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
             addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
+        //avoid walls
+        //force += WallFollow();
     }
 
     private void HandleHunting()
@@ -211,6 +214,8 @@ public class RobotAI : Vehicle {
         force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
         if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
             addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
+        //avoid walls
+        //force += WallFollow();
         //Shoot player if within sight range
         if (fov.playerVisible)
             ShootPlayer();
@@ -244,6 +249,8 @@ public class RobotAI : Vehicle {
         }
         //follow the path
         force += Seek(new Vector2(currentRecoveryNode.transform.position.x, currentRecoveryNode.transform.position.y));
+        //avoid walls
+        //force += WallFollow();
     }
 
     private void FollowPatrolRoute()
