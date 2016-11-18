@@ -175,6 +175,18 @@ public class Player : MonoBehaviour {
         Debug.Log(activeAbility);
     }
 
+    public void AddPassiveAbility(PassiveAbilities pasAb)
+    {
+        switch(pasAb)
+        {
+            case PassiveAbilities.addSpeed:
+                moveSpeed *= 1.2f;
+                break;
+        }
+
+        Debug.Log(pasAb);
+    }
+
     //Recharge ability bar to full
     public void RechargeActiveAbility()
     {

@@ -5,15 +5,15 @@ using UnityEngine.UI;
 public class Terminal : MonoBehaviour
 {
 
-    ActiveAbilities thisAbility;//Ability that this terminal gives
+    ActiveAbilities thisActive;//Ability that this terminal gives
+    PassiveAbilities thisPassive;
 
     //Each float corresponds with ability at that index
     private float[] ActiveAbilitiesUsesOrDuration = {
         0,//None
-        3,//Invisible, lasts 5 seconds
-        3//Dash, lasts 5 seconds
+        3,//Invisible, lasts 3 seconds
+        3//Dash, lasts 3 seconds
     };
-
 
     private bool abilityIsActive;
 
@@ -33,17 +33,18 @@ public class Terminal : MonoBehaviour
         spriteAnimator = GetComponent<Animator>();
 
         //Determine whether ability is active or passive, for now don't worry about it
-        //abilityIsActive = Random.value <= .5f;
-        abilityIsActive = true;
+        abilityIsActive = Random.value <= .3f;
+        //abilityIsActive = true;
 
         if (abilityIsActive)
         {
-            thisAbility = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
+            thisActive = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
             spriteAnimator.Play("orange");
         }
         else
         {
             //Blah blah blah, figure out later but make ability passive
+            thisPassive = (PassiveAbilities)(int)Random.Range(0, 2);
             spriteAnimator.Play("blue");
         }
 
@@ -66,7 +67,10 @@ public class Terminal : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.E))
             {
                 //Give ability to player
-                player.AddActiveAbility(thisAbility, ActiveAbilitiesUsesOrDuration[(int)thisAbility]);
+                if (abilityIsActive)
+                    player.AddActiveAbility(thisActive, ActiveAbilitiesUsesOrDuration[(int)thisActive]);
+                else
+                    player.AddPassiveAbility(thisPassive);
 
                 Disable();
             }
@@ -81,7 +85,10 @@ public class Terminal : MonoBehaviour
             {
                 terminalPopup.SetActive(true);
                 terminalPopup.GetComponent<TerminalPopup>().UpdatePosition();
-
+                if(abilityIsActive)
+                    terminalPopup.GetComponent<TerminalPopup>().UpdateAbilityIcon(thisActive);
+                else
+                    terminalPopup.GetComponent<TerminalPopup>().UpdateAbilityIcon(thisPassive);
                 inRange = true;
             }
         }
