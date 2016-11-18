@@ -119,6 +119,7 @@ public class PriorityQueue  {
     public void Remove(NavNode v)
     {
         list.Remove(v);
+        if (list.Count > 0) 
         Sort();
     }
 

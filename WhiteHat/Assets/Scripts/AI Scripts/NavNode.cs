@@ -9,8 +9,8 @@ public class NavNode : MonoBehaviour {
 
     #region Protected fields
     protected NavNode parent;
-    protected int dist;
-    protected int priority;
+    protected float dist;
+    protected float priority;
     protected bool walkable;
     #endregion
 
@@ -20,7 +20,7 @@ public class NavNode : MonoBehaviour {
         get { return parent; }
         set { parent = value; }
     }
-    public int DistFromStart
+    public float DistFromStart
     {
         get { return dist; }
         set { dist = value; }
@@ -29,7 +29,7 @@ public class NavNode : MonoBehaviour {
     { get { return neighbors; } }
     public bool Walkable
     { get { return walkable; } set { walkable = value; } }
-    public int Priority
+    public float Priority
     { get { return priority; } set { priority = value; } }
     #endregion
 

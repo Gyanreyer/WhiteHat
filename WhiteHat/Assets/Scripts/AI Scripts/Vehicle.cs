@@ -9,6 +9,10 @@ abstract public class Vehicle : MonoBehaviour
     public float mass = 1.0f;
     public float radius = 1.0f;
     public float tooCloseDist = 10f;
+    public float wallFollowDist = 5f;
+    public float wallFollowNormRange = 10f;
+    public float wallFollowWeight = 2f;
+    public LayerMask wallLayer;
 
     #region Fields
     protected Vector2 acceleration;
@@ -59,6 +63,17 @@ abstract public class Vehicle : MonoBehaviour
         desired = desired.normalized * maxSpeed;
         desired -= velocity;
         return desired;
+    }
+    protected Vector2 WallFollow()
+    {
+        RaycastHit2D hitInfo = Physics2D.Raycast(this.transform.position, this.transform.up, wallFollowDist, wallLayer);
+        if (hitInfo)
+        {
+            Debug.DrawLine(this.transform.position, hitInfo.point, Color.green);
+            //Debug.DrawRay(new Vector2(hitInfo.transform.position.x, hitInfo.transform.position.y), new Vector2(hitInfo.transform.position.x, hitInfo.transform.position.y) + hitInfo.normal * wallFollowNormRange);
+            return (new Vector2(hitInfo.point.x, hitInfo.point.y) + hitInfo.normal * wallFollowNormRange) * wallFollowWeight;
+        }
+        return Vector2.zero;
     }
     #endregion
 }

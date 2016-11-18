@@ -55,18 +55,19 @@ public class AStarGraph  {
             // Add it to the closed list
             closed.Add(current.gameObject);
             // Heuristic variable
-            int diagonal = 0;
+            float diagonal = 0;
             // Queue up neighbors of top vertex
             foreach (GameObject vert in current.Neighbors)
             {
                 NavNode node = vert.GetComponent<NavNode>();
-
-                int cost = current.DistFromStart + 1; // Here, "1" is the distance from the current vert to its neighbor. For this graph, it will always be 1 block away
-                                                      // Remove far away vertices
+                // Here, "1" is the distance from the current vert to its neighbor. For this graph, it will always be 1 block away
+                // ... not anymore! Thanks, freshman me. I hope you aren't lying
+                float cost = current.DistFromStart + (current.transform.position - node.transform.position).sqrMagnitude;
+                // Remove far away vertices
                 if (cost < node.DistFromStart)
                 {
                     if (pq.Contains(node))
-                        pq.Remove(node);
+                        pq.Remove(node);//THIS MAY BE CAUSING ISSUES
                     if (closed.Contains(vert))
                         closed.Remove(vert);
                 }
@@ -74,9 +75,10 @@ public class AStarGraph  {
                 if (!closed.Contains(vert) && !pq.Contains(node) && node.Walkable)
                 {
                     node.DistFromStart = cost;
-                    diagonal = (int)(Mathf.Sqrt(Mathf.Pow(end.transform.position.x - vert.transform.position.x, 2) + Mathf.Pow(end.transform.position.y - vert.transform.position.y, 2)));
+                    diagonal = (end.transform.position - vert.transform.position).sqrMagnitude; //Mathf.Pow(end.transform.position.x - vert.transform.position.x, 2) - Mathf.Pow(end.transform.position.y - vert.transform.position.y, 2);
                     node.Priority = node.DistFromStart + diagonal;
                     node.Parent = current;
+                    node.Walkable = false;
                     pq.Enqueue(node);
                 }
             }
@@ -91,6 +93,11 @@ public class AStarGraph  {
                 path.Add(current.gameObject);
             }
         }
+        //Reset the walkable values and empty the PQ
+        ResetGraph();
+        //Reverse the path (because it's backwards by default
+        path.Reverse();
+        //return the path
         return path.ToArray();
     }
 
