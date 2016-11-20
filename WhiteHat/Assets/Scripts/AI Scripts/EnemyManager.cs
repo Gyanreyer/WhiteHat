@@ -13,6 +13,8 @@ public class EnemyManager : MonoBehaviour {
     public float searchTime = 10f;
     [Tooltip("Constant added each frame while the player is in view of cameras.")]
     public float spotTimeAddedConstant = 0.004f;
+    [Tooltip("Object layers for the robots to avoid.")]
+    public LayerMask wallLayer;
     #endregion
     #region Private Fields
     //Reference to the player
@@ -41,6 +43,8 @@ public class EnemyManager : MonoBehaviour {
     private float currentTimeInSearching;
     //Holds a-star related methods
     AStarGraph aStar;
+    //closest node to the player
+    GameObject closestNodeToLastKnownPlayerLoc;
     #endregion
     #region Properties
     public AlertStates AlertState
@@ -49,6 +53,8 @@ public class EnemyManager : MonoBehaviour {
     {get { return spotTimeAddedConstant; } }
     public Vector3 LastKnownLocation
     { get { return lastKnownLoc; } set { lastKnownLoc = value; } }
+    public GameObject ClosestNodeToLastKnownPlayerLoc
+    { get { return closestNodeToLastKnownPlayerLoc; } }
     #endregion
 
     #region Unity Defaults
@@ -62,9 +68,14 @@ public class EnemyManager : MonoBehaviour {
         robots = GameObject.FindGameObjectsWithTag("RobotAI");
         //set their spot time
         foreach(GameObject c in cameras)
+        {
             c.GetComponent<CameraAI>().TimeToAlert = spotTimeToAlert;
+        }
         foreach (GameObject r in robots)
+        {
             r.GetComponent<RobotAI>().TimeToAlert = spotTimeToAlert;
+            r.GetComponent<RobotAI>().WallLayer = wallLayer;
+        }
         //get ref to canvas text object
         canvasText = GameObject.Find("Canvas").transform.GetChild(0).gameObject.GetComponent<Text>();
         aStar = new AStarGraph(); // I guess you don't need this because Unity automatically constructs objects?
@@ -88,6 +99,7 @@ public class EnemyManager : MonoBehaviour {
 	}
     #endregion
 
+    #region Methods
     /// <summary>
     /// Manages the patrol state
     /// </summary>
@@ -146,6 +158,8 @@ public class EnemyManager : MonoBehaviour {
         currentTimeInAlarm = 0;
         //Update last known location
         lastKnownLoc = playerObj.transform.position;
+        //update closest node
+        closestNodeToLastKnownPlayerLoc = FindClosestNode(lastKnownLoc);
     }
 
     /// <summary>
@@ -158,22 +172,57 @@ public class EnemyManager : MonoBehaviour {
 
     /// <summary>
     /// Returns the closest node to a given location.
-    /// Super not efficient right now... will do quadtrees later if/when necessary
+    /// Super inefficient right now... will do quadtrees later if/when necessary
     /// </summary>
     public GameObject FindClosestNode(Vector3 loc)
     {
-        float minDist = float.MaxValue;
+        float[] minDists = { float.MaxValue, float.MaxValue, float.MaxValue };
+        int[] closestIndices = { 0, 0, 0 };
         float tempDist = 0;
-        int closestIndex = 0;
-        for (int i = 0; i < aStar.Verts.Length; ++i) 
+        for (int i = 0; i < aStar.Verts.Length; ++i)
         {
+            //get dist to vert
             tempDist = Vector3.SqrMagnitude(aStar.Verts[i].transform.position - loc);
-            if (tempDist < minDist)
+            //should be inserted in farthest spot
+            if (tempDist < minDists[2])// && tempDist >= minDists[1])
             {
-                minDist = tempDist;
-                closestIndex = i;
+                float[] tempDists = minDists;
+                int[] tempIndices = closestIndices;
+                minDists[0] = tempDists[1];
+                minDists[1] = tempDists[2];
+                minDists[2] = tempDist;
+                closestIndices[0] = tempIndices[1];
+                closestIndices[1] = tempIndices[2];
+                closestIndices[2] = i;
+            }
+            //should be inserted in middle spot
+            else if (tempDist < minDists[1])// && tempDist >= minDists[0])
+            {
+                float[] tempDists = minDists;
+                int[] tempIndices = closestIndices;
+                minDists[0] = tempDists[1];
+                minDists[1] = tempDist;
+                closestIndices[0] = tempIndices[1];
+                closestIndices[1] = i;
+            }
+            //should be inserted in lowest spot
+            else if (tempDist < minDists[0])
+            {
+                minDists[0] = i;
+                closestIndices[0] = i;
             }
         }
-        return aStar.Verts[closestIndex];
+        //Now we need to raycast to make sure we have sight to it...
+        //get vec to the location passed in
+        Vector3 vecToLoc = aStar.Verts[closestIndices[2]].transform.position - loc;
+        if (!Physics2D.Raycast(loc, vecToLoc, vecToLoc.magnitude, wallLayer))
+            return aStar.Verts[closestIndices[2]];
+        //update the vector if the first check failed
+        vecToLoc = aStar.Verts[closestIndices[1]].transform.position - loc;
+        if (!Physics2D.Raycast(loc, vecToLoc, vecToLoc.magnitude, wallLayer))
+            return aStar.Verts[closestIndices[1]];
+        //if you can't see any of them well then I guess we're screwed because the 3rd one is gonna get returned anyway
+        return aStar.Verts[closestIndices[0]];
     }
+    #endregion
 }
