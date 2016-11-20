@@ -7,7 +7,8 @@ public enum ActiveAbilities
 {
     none,
     invisible,
-    dash
+    dash,
+    shoot
 }
 
 public enum PassiveAbilities
@@ -56,6 +57,7 @@ public class Player : MonoBehaviour {
     private SpriteRenderer bodySpriteRenderer, legsSpriteRenderer;
     private TrailRenderer dashTrail;
 
+    public GameObject bullet;
 
 	// Use this for initialization
 	void Start () {
@@ -77,10 +79,10 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
-            //float speed = moveSpeed;// * (Input.GetKey(KeyCode.LeftShift) ? 1.5f: 1);
+            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? .6f: 1);
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
-            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * moveSpeed;
+            velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
             legs.transform.position = transform.position + new Vector3(0, 0, 1);
@@ -114,10 +116,11 @@ public class Player : MonoBehaviour {
 
         if(Input.GetKeyDown(KeyCode.Q))
         {
-            if (isAbilityActive)
+            /*if (isAbilityActive)
                 DeactivateAbility();
 
-            else
+            else*/
+            if(!isAbilityActive)
                 UseAbility();
         }
 
@@ -156,8 +159,6 @@ public class Player : MonoBehaviour {
         }
     }
 
-
-
     private void BackToMenu()
     {
         SceneManager.LoadScene(0);
@@ -181,6 +182,9 @@ public class Player : MonoBehaviour {
         {
             case PassiveAbilities.addSpeed:
                 moveSpeed *= 1.2f;
+                break;
+            case PassiveAbilities.addDetectionResisitance:
+                GameObject.Find("EnemyManager").GetComponent<EnemyManager>().spotTimeToAlert *= 1.1f;
                 break;
         }
 
@@ -207,7 +211,6 @@ public class Player : MonoBehaviour {
 
                 legsSpriteRenderer.color = new Color(1,1,1,.5f);
                 bodySpriteRenderer.color = new Color(1, 1, 1, .5f);//Make sprites semi-transparent
-                
 
                 break;
 
@@ -216,6 +219,14 @@ public class Player : MonoBehaviour {
 
                 moveSpeed *= 2;
                 dashTrail.enabled = true;
+                break;
+            case ActiveAbilities.shoot:
+                percentActiveLeft -= activeBarDecreaseAmt;
+
+                GameObject firedBullet = (GameObject)Instantiate(bullet,transform.position,Quaternion.identity);
+
+                firedBullet.GetComponent<Bullet>().setUp(transform.up);
+
                 break;
         }
     }
@@ -252,8 +263,6 @@ public class Player : MonoBehaviour {
         //If used up, set active to false
         if(percentActiveLeft <= 0)
             DeactivateAbility();
-        
-
     }
 
     /// <summary>

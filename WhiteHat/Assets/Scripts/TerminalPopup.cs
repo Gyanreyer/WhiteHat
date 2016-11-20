@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class TerminalPopup : MonoBehaviour
 {
-    public Sprite[] ablitySprites;
+    public Sprite[] abilitySprites;
     public Sprite[] passiveSprites;
 
     private Image abilityIcon;
@@ -44,14 +44,20 @@ public class TerminalPopup : MonoBehaviour
         switch (ability)
         {
             case ActiveAbilities.invisible:
-                newSprite = ablitySprites[0];
+                newSprite = abilitySprites[0];
                 newText += "(Invisibility)";
                 break;
 
             case ActiveAbilities.dash:
-                newSprite = ablitySprites[1];
+                newSprite = abilitySprites[1];
                 newText += "(Dash)";
                 break;
+
+            case ActiveAbilities.shoot:
+                newSprite = abilitySprites[1];
+                newText += "(Gun)";
+                break;
+
         }
 
         abilityText.text = newText;
@@ -73,8 +79,8 @@ public class TerminalPopup : MonoBehaviour
 
             case PassiveAbilities.addDetectionResisitance:
                 newSprite = passiveSprites[1];
-                newText += "(Become harder to spot)";
-                break;
+                newText += "(Harder to detect)";
+                break;            
         }
 
 

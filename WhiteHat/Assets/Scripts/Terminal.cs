@@ -12,7 +12,8 @@ public class Terminal : MonoBehaviour
     private float[] ActiveAbilitiesUsesOrDuration = {
         0,//None
         3,//Invisible, lasts 3 seconds
-        3//Dash, lasts 3 seconds
+        3//,//Dash, lasts 3 seconds
+        //1//Shoot, 1 bullet
     };
 
     private bool abilityIsActive;
@@ -33,17 +34,17 @@ public class Terminal : MonoBehaviour
         spriteAnimator = GetComponent<Animator>();
 
         //Determine whether ability is active or passive, for now don't worry about it
-        abilityIsActive = Random.value <= .3f;
+        abilityIsActive = Random.value <= .45f;
         //abilityIsActive = true;
 
         if (abilityIsActive)
         {
+            //thisActive = ActiveAbilities.shoot;
             thisActive = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
             spriteAnimator.Play("orange");
         }
         else
         {
-            //Blah blah blah, figure out later but make ability passive
             thisPassive = (PassiveAbilities)(int)Random.Range(0, 2);
             spriteAnimator.Play("blue");
         }
