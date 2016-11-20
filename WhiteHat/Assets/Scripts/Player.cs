@@ -85,7 +85,7 @@ public class Player : MonoBehaviour {
             velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
-            legs.transform.position = transform.position + new Vector3(0, 0, 1);
+            //legs.transform.position = transform.position + new Vector3(0, 0, 1);
 
             //Rotate to face mouse
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
@@ -286,7 +286,7 @@ public class Player : MonoBehaviour {
         else if (state == PlayerState.dead)
         {
             legs.SetActive(false);//Disable legs so they don't display anymore
-            GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
+            transform.FindChild("Body").GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
 
             rigidBody.isKinematic = true;//Disable physics and stop the player's movement
             velocity = Vector2.zero;
