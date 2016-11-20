@@ -60,6 +60,7 @@ public class Elevator : MonoBehaviour {
                 transform.position = new Vector3(nextPosition.x,nextPosition.y,transform.position.z);
 
                 playerGO.transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z-2) + (Vector3)playerDiffFromElevator;
+                Camera.main.transform.position = playerGO.transform.position;
             }
         }
         else if (state == ElevatorState.arriving)
