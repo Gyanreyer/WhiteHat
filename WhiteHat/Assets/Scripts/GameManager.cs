@@ -40,8 +40,14 @@ public class GameManager : MonoBehaviour
     #region Methods
     public void ActivateNextFloor()
     {
+        if(++currentFloor >= floors.Length)
+        {
+            SceneManager.LoadScene(0);
+            return;
+        }
+
         //Increment the checkpoint
-        ++currentFloor;
+        //++currentFloor;
         //Activate the next floor in the array
         floors[currentFloor].SetActive(true);
     }

@@ -303,7 +303,7 @@ public class Player : MonoBehaviour {
 
             newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
-            Invoke("Respawn", 2);
+            Invoke("Respawn", 1);
         }
     }
 
@@ -320,8 +320,6 @@ public class Player : MonoBehaviour {
 
         state = PlayerState.idle;
         UpdateAnimationState();
-
-        activeAbility = ActiveAbilities.none;
 
         rigidBody.isKinematic = false;
 

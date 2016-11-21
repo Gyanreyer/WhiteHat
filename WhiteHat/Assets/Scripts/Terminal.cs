@@ -115,4 +115,17 @@ public class Terminal : MonoBehaviour
 
         Destroy(this);//Can't interact with this anymore ever because just deleting this script
     }
+
+    //Called when object was disabled in scene and was then re-enabled.  Need to start up proper animations accordingly
+    void OnEnable()
+    {
+        if (abilityIsActive)
+        {
+            spriteAnimator.Play("blue");
+        }
+        else
+        {
+            spriteAnimator.Play("orange");
+        }
+    }
 }
