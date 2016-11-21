@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PriorityQueue  {
-
+public class PriorityQueue
+{
     List<NavNode> list;
 
     public PriorityQueue()

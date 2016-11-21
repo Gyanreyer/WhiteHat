@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AStarGraph  {
-
+public class AStarGraph
+{
     // Fields
     GameObject[] verts;
     PriorityQueue pq;

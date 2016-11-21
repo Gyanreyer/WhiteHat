@@ -89,6 +89,9 @@ public class Elevator : MonoBehaviour {
 
                     doorCollider.enabled = false;
                     state = ElevatorState.levelStart;
+
+                    //disable previous floor
+                    GameObject.Find("GameManager").GetComponent<GameManager>().DeactivatePrevFloor();
                 }
             }
         }
@@ -99,6 +102,9 @@ public class Elevator : MonoBehaviour {
     {
         GameObject.Find("Player").transform.position -= new Vector3(0,0,3);
         transform.position -= new Vector3(0,0,3);
+
+        //activate next floor and set checkpoint
+        GameObject.Find("GameManager").GetComponent<GameManager>().ActivateNextFloor();
 
         usedElevator = true;
 

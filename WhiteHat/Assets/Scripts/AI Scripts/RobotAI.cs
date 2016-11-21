@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RobotAI : Vehicle {
-
+public class RobotAI : Vehicle
+{
     [Tooltip("Path the robot should follow when it's patroling. Use NavNode objects. Note that the robot will always start at the first node.")]
     public GameObject[] patrolRoute;
     [Tooltip("What the robot should do when it's done with its path route.")]

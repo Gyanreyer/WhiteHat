@@ -2,8 +2,8 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class EnemyManager : MonoBehaviour {
-
+public class EnemyManager : MonoBehaviour
+{
     #region Public Fields
     [Tooltip("Time it will take for cameras to trigger an alarm, in seconds. 'Seconds' only if the player is directly in front of the camera; at further distances it will take much longer.")]
     public float spotTimeToAlert = 0.2f;
