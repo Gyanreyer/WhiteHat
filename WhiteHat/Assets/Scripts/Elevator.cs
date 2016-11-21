@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class Elevator : MonoBehaviour {
 
@@ -17,19 +18,23 @@ public class Elevator : MonoBehaviour {
 
     ElevatorState state;
 
+    public Vector3 nextPosition;
+
     Material elevatorFade;
 
     BoxCollider2D doorCollider;
 
     float arrivingTimer = .6f;
 
-    public Vector3 nextPosition;
+    private Text promptText;
 
 	// Use this for initialization
 	void Start () {
         elevatorFade = transform.FindChild("BlackFade").GetComponent<Renderer>().material;
 
         doorCollider = transform.FindChild("Door").GetComponent<BoxCollider2D>();
+
+        promptText = GetComponentInChildren<Text>();
 
         state = ElevatorState.levelEnd;
 	}
@@ -100,14 +105,18 @@ public class Elevator : MonoBehaviour {
         doorCollider.enabled = true;
 
         state = ElevatorState.riding;
+
+        promptText.color = Color.clear;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Player" && state == ElevatorState.levelEnd)
         {
             playerEntered = true;
             //GoToNextLevel();
+
+            promptText.color = new Color(.1f,.1f,.1f,1);
         }
     }
 
@@ -116,6 +125,8 @@ public class Elevator : MonoBehaviour {
         if (other.tag == "Player")
         {
             playerEntered = false;
+
+            promptText.color = Color.clear;
         }
     }
 }

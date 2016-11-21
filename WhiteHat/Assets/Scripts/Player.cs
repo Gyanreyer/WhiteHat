@@ -157,6 +157,7 @@ public class Player : MonoBehaviour {
         {
             GameObject.Find("WinText").GetComponent<Text>().text = "You win!";
             Invoke("BackToMenu", 2);
+
         }
     }
 
