@@ -43,7 +43,7 @@ public class Player : MonoBehaviour {
 
     private PlayerState state;
 
-    public Sprite deathSprite;
+    public Sprite deathSprite,bodySprite;
 
     public GameObject deathPartSys;
 
@@ -292,7 +292,7 @@ public class Player : MonoBehaviour {
         else if (state == PlayerState.dead)
         {
             legs.SetActive(false);//Disable legs so they don't display anymore
-            transform.FindChild("Body").GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
+            body.GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
 
             rigidBody.isKinematic = true;//Disable physics and stop the player's movement
             velocity = Vector2.zero;
@@ -303,7 +303,30 @@ public class Player : MonoBehaviour {
 
             newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
-            Invoke("BackToMenu", 2);
+            Invoke("Respawn", 2);
         }
+    }
+
+    void Respawn()
+    {    
+        ResetPlayer();
+        //Do stuff with GM spawn pt
+    }
+
+    void ResetPlayer()
+    {
+        body.GetComponent<SpriteRenderer>().sprite = bodySprite;
+
+        state = PlayerState.idle;
+        UpdateAnimationState();
+
+        activeAbility = ActiveAbilities.none;
+
+        rigidBody.isKinematic = false;
+
+        gameObject.layer = 8;
+
+        legs.SetActive(true);
+
     }
 }
