@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
     private Camera mainCamera;
     private Rigidbody2D rigidBody;
 
-    private GameObject legs;
+    private GameObject legs,body;
 
     private Vector2 velocity;
 
@@ -65,8 +65,9 @@ public class Player : MonoBehaviour {
         rigidBody = GetComponent<Rigidbody2D>();
 
         legs = GameObject.Find("Legs");
+        body = GameObject.Find("Body");
 
-        bodySpriteRenderer = GetComponent<SpriteRenderer>();
+        bodySpriteRenderer = body.GetComponent<SpriteRenderer>();
         legsSpriteRenderer = legs.GetComponent<SpriteRenderer>();
 
         dashTrail = legs.GetComponent<TrailRenderer>();
@@ -174,6 +175,8 @@ public class Player : MonoBehaviour {
         activeBarDecreaseAmt = 100/durationOrNumUses;
 
         Debug.Log(activeAbility);
+
+        GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1,1,1,1);
     }
 
     public void AddPassiveAbility(PassiveAbilities pasAb)
@@ -202,7 +205,9 @@ public class Player : MonoBehaviour {
     {
         if (activeAbility == ActiveAbilities.none || percentActiveLeft <= 0) return;//Don't do anything if don't have an ability or it's used up  
 
-        switch(activeAbility)
+        GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1, 1, 1, 0);
+
+        switch (activeAbility)
         {
             case ActiveAbilities.invisible:
                 isAbilityActive = true;
