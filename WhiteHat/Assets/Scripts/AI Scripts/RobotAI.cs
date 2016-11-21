@@ -9,6 +9,8 @@ public class RobotAI : Vehicle {
     public PathTypes pathType;
     [Tooltip("How close the robot should be to its node to go to the next one.")]
     public float minDistToNodeToContinue = 4f;
+    [Tooltip("How aggressively the robots will steer around when an alert is raised.")]
+    public float huntingForceScale = 4f;
 
     #region Private Fields
     //Enum of possible states
@@ -246,7 +248,7 @@ public class RobotAI : Vehicle {
         else
         {
             //Seek last known location
-            force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
+            force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint) * huntingForceScale;
             if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2))
                 addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
         }
