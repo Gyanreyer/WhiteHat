@@ -310,7 +310,8 @@ public class Player : MonoBehaviour {
     void Respawn()
     {    
         ResetPlayer();
-        //Do stuff with GM spawn pt
+        this.transform.position = GameObject.Find("GameManager").GetComponent<GameManager>().RespawnLocation + new Vector3(0, 0, -2);
+        GameObject.Find("EnemyManager").GetComponent<EnemyManager>().ResetAlarm();
     }
 
     void ResetPlayer()
@@ -327,6 +328,5 @@ public class Player : MonoBehaviour {
         gameObject.layer = 8;
 
         legs.SetActive(true);
-
     }
 }

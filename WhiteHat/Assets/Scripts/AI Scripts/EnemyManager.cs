@@ -24,8 +24,6 @@ public class EnemyManager : MonoBehaviour
     //Arrays to hold enemies
     private GameObject[] cameras;
     private GameObject[] robots;
-    //Array to hold navnodes
-    //private GameObject[] navNodes;//aStar object holds these as "Verts"
     //Reference to the canvas
     private Text canvasText;
     //States for alert phase
@@ -223,6 +221,16 @@ public class EnemyManager : MonoBehaviour
             return aStar.Verts[closestIndices[1]];
         //if you can't see any of them well then I guess we're screwed because the 3rd one is gonna get returned anyway
         return aStar.Verts[closestIndices[0]];
+    }
+
+    /// <summary>
+    /// Should be called when the player dies
+    /// </summary>
+    public void ResetAlarm()
+    {
+        alertState = AlertStates.Patrol;
+        currentTimeInAlarm = 0;
+        currentTimeInSearching = 0;
     }
     #endregion
 }
