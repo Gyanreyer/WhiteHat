@@ -79,7 +79,7 @@ public class TerminalPopup : MonoBehaviour
 
             case PassiveAbilities.addDetectionResisitance:
                 newSprite = passiveSprites[1];
-                newText += "(Harder to detect)";
+                newText += "(Slower enemy reactions)";
                 break;            
         }
 

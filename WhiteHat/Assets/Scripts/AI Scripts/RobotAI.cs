@@ -1,14 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RobotAI : Vehicle {
-
+public class RobotAI : Vehicle
+{
     [Tooltip("Path the robot should follow when it's patroling. Use NavNode objects. Note that the robot will always start at the first node.")]
     public GameObject[] patrolRoute;
     [Tooltip("What the robot should do when it's done with its path route.")]
     public PathTypes pathType;
     [Tooltip("How close the robot should be to its node to go to the next one.")]
     public float minDistToNodeToContinue = 4f;
+    [Tooltip("How aggressively the robots will steer around when an alert is raised.")]
+    public float huntingForceScale = 4f;
 
     #region Private Fields
     //Enum of possible states
@@ -39,18 +41,28 @@ public class RobotAI : Vehicle {
     private GameObject currentNode;
     //Current node in the recovery path
     private GameObject currentRecoveryNode;
+    //current node in hunt path
+    private GameObject currentHuntNode;
     //Time to trigger an alarm, in seconds
     private float timeToAlert = 2f;
     //Time spent staring at the player
     private float spottingTime = 0f;
     //Path that will be generated via A-star when the robot goes off-course looking for the player
-    public GameObject[] recoveryRoute;
+    [SerializeField]
+    private GameObject[] recoveryRoute;
+    //Path for when the robot has to get to the player on an alert
+    [SerializeField]
+    private GameObject[] huntingRoute;
     //Bool that will be on when recovering from going off the patrol route
     private bool recovering = false;
+    //Bool that will be on when following the hunt path
+    private bool hunting = false;
     //The current index in the path
     private int currentNodeIndex = 0;
     //The current index in the recovery path
     private int currentRecoveryIndex = 0;
+    //current index in hunt path
+    private int currentHuntIndex = 0;
     //Point that the robot will go over to inspect
     private Vector2 inspectPoint = Vector2.zero;
     //Renderer for the FOV mesh
@@ -136,8 +148,6 @@ public class RobotAI : Vehicle {
         {
             //reset spotting time
             spottingTime = 0;
-            //if (robotState == RobotStates.Inspecting)
-                //robotState == RobotStates.Patroling;
             //Update state based on alert state
             switch (enemyMan.AlertState)
             {
@@ -152,11 +162,28 @@ public class RobotAI : Vehicle {
                         if (recoveryRoute.Length != 0)
                             currentRecoveryNode = recoveryRoute[0];
                         else
-                            recovering = false; //NOTE: this is a hacky solution to what may be an issue with the AStar class. Still working on it...
+                            recovering = false;//failsafe in case things go horribly wrong
                     }
                     robotState = RobotStates.Patroling;
                     break;
                 case EnemyManager.AlertStates.Alarmed:
+                    if (!Physics2D.Raycast(this.transform.position, vecToPlayer, 100, wallLayer))
+                    {
+                        if (robotState == RobotStates.Patroling || robotState == RobotStates.Inspecting)
+                        {
+                            //if you were minding your own business when you were alerted...find a path to the player's last known loc if you can't see them already
+                            huntingRoute = enemyMan.GenerateAStarPath(enemyMan.FindClosestNode(this.transform.position).GetComponent<NavNode>(), enemyMan.ClosestNodeToLastKnownPlayerLoc.GetComponent<NavNode>());//whew, this is kinda messy
+                            hunting = true;
+                            if (huntingRoute.Length != 0)
+                                currentHuntNode = huntingRoute[0];
+                            else
+                                hunting = false;
+                        }
+                    }
+                    else
+                    {
+                        hunting = false;
+                    }
                     robotState = RobotStates.Hunting;
                     break;
                 case EnemyManager.AlertStates.Searching:
@@ -184,7 +211,7 @@ public class RobotAI : Vehicle {
         base.Update();
     }
     #endregion
-
+    #region Methods
     private void HandleInspecting()
     {
         //Seek inspect point
@@ -194,28 +221,37 @@ public class RobotAI : Vehicle {
             render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
         else
             render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
-        //avoid walls
-        //force += WallFollow();
     }
 
     private void HandleSearching()
     {
-        //THIS IS GONNA BE REDONE
-        force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
-        if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
-            addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
-        //avoid walls
-        //force += WallFollow();
+        //Think I'll probably redo this but I'm not sure if I'll need a Searching enum...
+        if (hunting)
+        {
+            FollowHuntRoute();
+        }
+        else
+        {
+            //Seek last known location
+            force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
+            if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2))
+                addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
+        }
     }
 
     private void HandleHunting()
     {
-        //Seek last known location
-        force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint);
-        if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2)) 
-            addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
-        //avoid walls
-        //force += WallFollow();
+        if(hunting)
+        {
+            FollowHuntRoute();
+        }
+        else
+        {
+            //Seek last known location
+            force += Seek(enemyMan.LastKnownLocation + addedOffsetPoint) * huntingForceScale;
+            if (Vector3.SqrMagnitude(this.transform.position - (enemyMan.LastKnownLocation + addedOffsetPoint)) < Mathf.Pow(minDistToNodeToContinue, 2))
+                addedOffsetPoint = new Vector3(Random.Range(-5, 5), Random.Range(-5, 5), 0);
+        }
         //Shoot player if within sight range
         if (fov.playerVisible)
             ShootPlayer();
@@ -249,8 +285,6 @@ public class RobotAI : Vehicle {
         }
         //follow the path
         force += Seek(new Vector2(currentRecoveryNode.transform.position.x, currentRecoveryNode.transform.position.y));
-        //avoid walls
-        //force += WallFollow();
     }
 
     private void FollowPatrolRoute()
@@ -291,13 +325,30 @@ public class RobotAI : Vehicle {
         force += Seek(new Vector2(currentNode.transform.position.x, currentNode.transform.position.y));
     }
 
+    private void FollowHuntRoute()
+    {
+        //if dist to current node < dist needed
+        if (Vector2.Distance(new Vector2(this.transform.position.x, this.transform.position.y), new Vector2(currentHuntNode.transform.position.x, currentHuntNode.transform.position.y)) < minDistToNodeToContinue)
+        {
+            //look for the next node
+            ++currentHuntIndex;
+            //if you've hit the last one,
+            if (currentHuntIndex >= huntingRoute.Length)
+            {
+                //stop recovering
+                hunting = false;
+                //get outta here
+                return;
+            }
+            //seek the next node
+            currentHuntNode = huntingRoute[currentHuntIndex];
+        }
+        //follow the path
+        force += Seek(new Vector2(currentHuntNode.transform.position.x, currentHuntNode.transform.position.y));
+    }
+
     protected override void CalcSteeringForces()
     {
-        /*
-        force += SeparationV2() * separationWeight;
-        force += WallFollow(wallRaycastDist, wallNormalDist) * wallFollowWeight;
-        */
-
         //Keep the force from going out of bounds
         force = Vector3.ClampMagnitude(force, maxForce);
         //Apply net force
@@ -317,6 +368,6 @@ public class RobotAI : Vehicle {
         fireTime = 0;
         GameObject bullet = (GameObject)Instantiate(bulletPrefab, this.transform.position + (this.transform.up * 2), Quaternion.identity);
         bullet.GetComponent<Bullet>().setUp(vecToPlayer);
-
     }
+    #endregion
 }

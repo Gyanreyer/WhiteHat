@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
     private Camera mainCamera;
     private Rigidbody2D rigidBody;
 
-    private GameObject legs;
+    private GameObject legs,body;
 
     private Vector2 velocity;
 
@@ -43,7 +43,7 @@ public class Player : MonoBehaviour {
 
     private PlayerState state;
 
-    public Sprite deathSprite;
+    public Sprite deathSprite,bodySprite;
 
     public GameObject deathPartSys;
 
@@ -65,8 +65,9 @@ public class Player : MonoBehaviour {
         rigidBody = GetComponent<Rigidbody2D>();
 
         legs = GameObject.Find("Legs");
+        body = GameObject.Find("Body");
 
-        bodySpriteRenderer = GetComponent<SpriteRenderer>();
+        bodySpriteRenderer = body.GetComponent<SpriteRenderer>();
         legsSpriteRenderer = legs.GetComponent<SpriteRenderer>();
 
         dashTrail = legs.GetComponent<TrailRenderer>();
@@ -85,7 +86,7 @@ public class Player : MonoBehaviour {
             velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
-            legs.transform.position = transform.position + new Vector3(0, 0, 1);
+            //legs.transform.position = transform.position + new Vector3(0, 0, 1);
 
             //Rotate to face mouse
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
@@ -156,6 +157,7 @@ public class Player : MonoBehaviour {
         {
             GameObject.Find("WinText").GetComponent<Text>().text = "You win!";
             Invoke("BackToMenu", 2);
+
         }
     }
 
@@ -174,6 +176,8 @@ public class Player : MonoBehaviour {
         activeBarDecreaseAmt = 100/durationOrNumUses;
 
         Debug.Log(activeAbility);
+
+        GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1,1,1,1);
     }
 
     public void AddPassiveAbility(PassiveAbilities pasAb)
@@ -202,7 +206,9 @@ public class Player : MonoBehaviour {
     {
         if (activeAbility == ActiveAbilities.none || percentActiveLeft <= 0) return;//Don't do anything if don't have an ability or it's used up  
 
-        switch(activeAbility)
+        GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1, 1, 1, 0);
+
+        switch (activeAbility)
         {
             case ActiveAbilities.invisible:
                 isAbilityActive = true;
@@ -286,7 +292,7 @@ public class Player : MonoBehaviour {
         else if (state == PlayerState.dead)
         {
             legs.SetActive(false);//Disable legs so they don't display anymore
-            GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
+            body.GetComponent<SpriteRenderer>().sprite = deathSprite;//Set sprite to reflect death
 
             rigidBody.isKinematic = true;//Disable physics and stop the player's movement
             velocity = Vector2.zero;
@@ -297,7 +303,28 @@ public class Player : MonoBehaviour {
 
             newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
-            Invoke("BackToMenu", 2);
+            Invoke("Respawn", 1);
         }
+    }
+
+    void Respawn()
+    {    
+        ResetPlayer();
+        this.transform.position = GameObject.Find("GameManager").GetComponent<GameManager>().RespawnLocation + new Vector3(0, 0, -2);
+        GameObject.Find("EnemyManager").GetComponent<EnemyManager>().ResetAlarm();
+    }
+
+    void ResetPlayer()
+    {
+        body.GetComponent<SpriteRenderer>().sprite = bodySprite;
+
+        state = PlayerState.idle;
+        UpdateAnimationState();
+
+        rigidBody.isKinematic = false;
+
+        gameObject.layer = 8;
+
+        legs.SetActive(true);
     }
 }

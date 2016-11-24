@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class AStarGraph  {
-
+public class AStarGraph
+{
     // Fields
     GameObject[] verts;
     PriorityQueue pq;
@@ -61,13 +61,13 @@ public class AStarGraph  {
             {
                 NavNode node = vert.GetComponent<NavNode>();
                 // Here, "1" is the distance from the current vert to its neighbor. For this graph, it will always be 1 block away
-                // ... not anymore! Thanks, freshman me. I hope you aren't lying
+                // ... not anymore! Thanks for the comment, freshman me. I hope you aren't lying
                 float cost = current.DistFromStart + (current.transform.position - node.transform.position).sqrMagnitude;
                 // Remove far away vertices
                 if (cost < node.DistFromStart)
                 {
                     if (pq.Contains(node))
-                        pq.Remove(node);//THIS MAY BE CAUSING ISSUES
+                        pq.Remove(node);//THIS MAY BE CAUSING ISSUES... not 100% sure
                     if (closed.Contains(vert))
                         closed.Remove(vert);
                 }

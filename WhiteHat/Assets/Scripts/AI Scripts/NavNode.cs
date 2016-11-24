@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class NavNode : MonoBehaviour {
-
+public class NavNode : MonoBehaviour
+{
     [Tooltip("List of connected nodes. Must be set via inspector with drag and drop.")]
     public List<GameObject> neighbors;
 

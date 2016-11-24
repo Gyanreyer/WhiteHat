@@ -41,12 +41,12 @@ public class Terminal : MonoBehaviour
         {
             //thisActive = ActiveAbilities.shoot;
             thisActive = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
-            spriteAnimator.Play("orange");
+            spriteAnimator.Play("blue");
         }
         else
         {
             thisPassive = (PassiveAbilities)(int)Random.Range(0, 2);
-            spriteAnimator.Play("blue");
+            spriteAnimator.Play("orange");
         }
 
         terminalPopup = GameObject.Find("TerminalPopup");
@@ -114,5 +114,18 @@ public class Terminal : MonoBehaviour
         terminalPopup.SetActive(false);
 
         Destroy(this);//Can't interact with this anymore ever because just deleting this script
+    }
+
+    //Called when object was disabled in scene and was then re-enabled.  Need to start up proper animations accordingly
+    void OnEnable()
+    {
+        if (abilityIsActive)
+        {
+            spriteAnimator.Play("blue");
+        }
+        else
+        {
+            spriteAnimator.Play("orange");
+        }
     }
 }

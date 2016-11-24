@@ -205,8 +205,6 @@ public class CameraAI : MonoBehaviour
         //update actual rotation
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
     }
-    #endregion
-
 
     private void ShootPlayer()
     {
@@ -217,8 +215,9 @@ public class CameraAI : MonoBehaviour
         }
 
         fireTime = 0;
-        GameObject bullet = (GameObject)Instantiate(bulletPrefab,transform.position-new Vector3(0,0,2),Quaternion.identity);
+        GameObject bullet = (GameObject)Instantiate(bulletPrefab, transform.position - new Vector3(0, 0, 2), Quaternion.identity);
         bullet.GetComponent<Bullet>().setUp(vecToPlayer);
 
     }
+    #endregion
 }
