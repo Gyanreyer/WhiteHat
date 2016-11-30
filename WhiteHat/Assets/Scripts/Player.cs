@@ -27,6 +27,8 @@ public class Player : MonoBehaviour {
         dead
     }
 
+    public bool sneaking;
+
     public float moveSpeed = 5;
 
     [Tooltip("How far the player will be able to scroll the camera.")]
@@ -80,13 +82,21 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
-            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? .6f: 1);
+            float speed = moveSpeed * (sneaking ? .6f: 1);
+
+            if(Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                sneaking = true;
+            }
+            else if(Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                sneaking = false;
+            }
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
             velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
-            //legs.transform.position = transform.position + new Vector3(0, 0, 1);
 
             //Rotate to face mouse
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
