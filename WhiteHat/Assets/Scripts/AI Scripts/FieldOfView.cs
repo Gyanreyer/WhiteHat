@@ -127,16 +127,22 @@ public class FieldOfView : MonoBehaviour {
                     }
                 }
                 
-                else if (oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDistThreshholdExceeded))
+                if (oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDistThreshholdExceeded))
                 {    
                     EdgeInfo edge = FindEdge(oldViewCast,newViewCast,obstacleMask);
                     if (edge.pointA != Vector3.zero)
                     {
-                        viewPoints.Add(edge.pointA);
+                        if(!newViewCastLow.hit)
+                            viewPoints.Add(edge.pointA);
+
+                        lowCoverPoints.Add(edge.pointA);
                     }
                     if (edge.pointB != Vector3.zero)
                     {
-                        viewPoints.Add(edge.pointB);
+                        if (!newViewCastLow.hit)
+                            viewPoints.Add(edge.pointB);
+
+                        lowCoverPoints.Add(edge.pointB);
                     }
                 }
             }
