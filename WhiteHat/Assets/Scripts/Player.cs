@@ -27,6 +27,8 @@ public class Player : MonoBehaviour {
         dead
     }
 
+    public bool sneaking;
+
     public float moveSpeed = 5;
 
     [Tooltip("How far the player will be able to scroll the camera.")]
@@ -59,6 +61,9 @@ public class Player : MonoBehaviour {
 
     public GameObject bullet;
 
+    private Animator noiseRingAnim;
+    private Animator legsAnim;
+
 	// Use this for initialization
 	void Start () {
         mainCamera = Camera.main;
@@ -72,6 +77,9 @@ public class Player : MonoBehaviour {
 
         dashTrail = legs.GetComponent<TrailRenderer>();
         dashTrail.enabled = false;
+
+        noiseRingAnim = transform.FindChild("NoiseRing").GetComponent<Animator>();
+        legsAnim = legs.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -80,13 +88,23 @@ public class Player : MonoBehaviour {
         //If alive, get movement
         if (state != PlayerState.dead)
         {
-            float speed = moveSpeed * (Input.GetKey(KeyCode.LeftShift) ? .6f: 1);
+            float speed = moveSpeed * (sneaking ? .6f: 1);
+
+            if(Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                sneaking = true;
+                UpdateAnimationState();
+            }
+            else if(Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                sneaking = false;
+                UpdateAnimationState();
+            }
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
             velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * speed;
 
             legs.transform.eulerAngles = new Vector3(0, 0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg - 90);
-            //legs.transform.position = transform.position + new Vector3(0, 0, 1);
 
             //Rotate to face mouse
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
@@ -283,11 +301,26 @@ public class Player : MonoBehaviour {
     {
         if (state == PlayerState.idle)
         {
-            legs.GetComponent<Animator>().Play("idle");
+            legsAnim.Play("idle");
+            noiseRingAnim.Play("idle");
         }
         else if (state == PlayerState.running)
         {
-            legs.GetComponent<Animator>().Play("run");
+            legsAnim.Play("run");
+
+            if (sneaking)
+            {
+                legsAnim.speed = .6f;
+
+                noiseRingAnim.Play("sneak");
+            }
+            else
+            {
+                legsAnim.speed = 1;
+                
+                noiseRingAnim.Play("run");
+            }
+
         }
         else if (state == PlayerState.dead)
         {
@@ -303,7 +336,7 @@ public class Player : MonoBehaviour {
 
             newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
-            Invoke("Respawn", 2);
+            Invoke("Respawn", 1);
         }
     }
 
@@ -320,8 +353,6 @@ public class Player : MonoBehaviour {
 
         state = PlayerState.idle;
         UpdateAnimationState();
-
-        activeAbility = ActiveAbilities.none;
 
         rigidBody.isKinematic = false;
 
