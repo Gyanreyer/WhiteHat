@@ -41,6 +41,7 @@ public class CameraAI : MonoBehaviour
     private float spottingTime = 0f;
     //Renderer for the FOV mesh
     private Renderer render;
+    private Renderer render2;
 
     private FieldOfView fov;//Field of view for camera, mainly handles visualation but also returns if player is in sight
 
@@ -62,7 +63,9 @@ public class CameraAI : MonoBehaviour
         playerObj = GameObject.FindGameObjectWithTag("Player");
         enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
         render = this.transform.GetChild(0).GetComponent<Renderer>();
+        render2 = this.transform.GetChild(1).GetComponent<Renderer>();
         render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+        render2.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
         totalRotation = minRot;
 
         fov = GetComponent<FieldOfView>();
@@ -75,12 +78,15 @@ public class CameraAI : MonoBehaviour
         {
             case EnemyManager.AlertStates.Patrol:
                 render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+                render2.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
                 break;
             case EnemyManager.AlertStates.Alarmed:
                 render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                render2.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
                 break;
             case EnemyManager.AlertStates.Searching:
                 render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+                render2.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
                 break;
         }
         //Handles camera states

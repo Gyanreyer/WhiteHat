@@ -67,6 +67,7 @@ public class RobotAI : Vehicle
     private Vector2 inspectPoint = Vector2.zero;
     //Renderer for the FOV mesh
     private Renderer render;
+    private Renderer render2;
     //Field of view for camera, mainly handles visualation but also returns if player is in sight
     private FieldOfView fov;
     //Prefab for the bullet
@@ -94,6 +95,8 @@ public class RobotAI : Vehicle
         fov = this.GetComponent<FieldOfView>();
         render = this.transform.GetChild(0).GetComponent<Renderer>();
         render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+        render2 = this.transform.GetChild(1).GetComponent<Renderer>();
+        render2.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
         playerObj = GameObject.FindGameObjectWithTag("Player");
         enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
     }
@@ -105,12 +108,15 @@ public class RobotAI : Vehicle
         {
             case EnemyManager.AlertStates.Patrol:
                 render.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
+                render2.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
                 break;
             case EnemyManager.AlertStates.Alarmed:
                 render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+                render2.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
                 break;
             case EnemyManager.AlertStates.Searching:
                 render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+                render2.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
                 break;
         }
         //Seek the player if you can see him, attack if you're alerted
@@ -218,9 +224,15 @@ public class RobotAI : Vehicle
         force += Seek(new Vector2(inspectPoint.x, inspectPoint.y));
         //Update mesh color based on alert state
         if (enemyMan.AlertState == EnemyManager.AlertStates.Patrol)
+        {
             render.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+            render2.material.SetColor("_Color", new Color(255, 255, 0, 0.4f));
+        }
         else
+        {
             render.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+            render2.material.SetColor("_Color", new Color(255, 0, 0, 0.4f));
+        }
     }
 
     private void HandleSearching()
