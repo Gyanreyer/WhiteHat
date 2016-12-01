@@ -61,6 +61,9 @@ public class Player : MonoBehaviour {
 
     public GameObject bullet;
 
+    private Animator noiseRingAnim;
+    private Animator legsAnim;
+
 	// Use this for initialization
 	void Start () {
         mainCamera = Camera.main;
@@ -74,6 +77,9 @@ public class Player : MonoBehaviour {
 
         dashTrail = legs.GetComponent<TrailRenderer>();
         dashTrail.enabled = false;
+
+        noiseRingAnim = transform.FindChild("NoiseRing").GetComponent<Animator>();
+        legsAnim = legs.GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -87,10 +93,12 @@ public class Player : MonoBehaviour {
             if(Input.GetKeyDown(KeyCode.LeftShift))
             {
                 sneaking = true;
+                UpdateAnimationState();
             }
             else if(Input.GetKeyUp(KeyCode.LeftShift))
             {
                 sneaking = false;
+                UpdateAnimationState();
             }
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
@@ -293,11 +301,26 @@ public class Player : MonoBehaviour {
     {
         if (state == PlayerState.idle)
         {
-            legs.GetComponent<Animator>().Play("idle");
+            legsAnim.Play("idle");
+            noiseRingAnim.Play("idle");
         }
         else if (state == PlayerState.running)
         {
-            legs.GetComponent<Animator>().Play("run");
+            legsAnim.Play("run");
+
+            if (sneaking)
+            {
+                legsAnim.speed = .6f;
+
+                noiseRingAnim.Play("sneak");
+            }
+            else
+            {
+                legsAnim.speed = 1;
+                
+                noiseRingAnim.Play("run");
+            }
+
         }
         else if (state == PlayerState.dead)
         {
