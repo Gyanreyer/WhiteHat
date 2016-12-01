@@ -267,7 +267,6 @@ public class Player : MonoBehaviour {
 
                 legsSpriteRenderer.color = new Color(1, 1, 1, 1);
                 bodySpriteRenderer.color = new Color(1, 1, 1, 1);
-
                 
                 break;
 
