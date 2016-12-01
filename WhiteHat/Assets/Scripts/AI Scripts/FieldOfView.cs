@@ -113,7 +113,6 @@ public class FieldOfView : MonoBehaviour {
                 bool edgeDistThreshholdExceeded = Mathf.Abs(oldViewCast.dist - newViewCast.dist) > edgeDistanceThreshhold;//Whether two casts hit but they hit different objects, meaning there is an edge here
                 bool edgeDistThreshholdExceededLow = Mathf.Abs(oldViewCastLow.dist - newViewCastLow.dist) > edgeDistanceThreshhold;
 
-                //STILL NEED TO MAKE THIS HAPPEN WITH LOW COVER LAYERS
                 if (oldViewCastLow.hit != newViewCastLow.hit || (oldViewCastLow.hit && newViewCastLow.hit && edgeDistThreshholdExceededLow))
                 {
                     EdgeInfo edge = FindEdge(oldViewCastLow, newViewCastLow,lowCoverMask);
@@ -187,22 +186,27 @@ public class FieldOfView : MonoBehaviour {
         triangles = new int[(vertexCount-2)*3];
 
         vertices[0] = Vector3.zero;
-        for (int i = 0; i < vertexCount - 1; i++)
-        {
-            vertices[i + 1] = transform.InverseTransformPoint(lowCoverPoints[i]);
-
-            if (i < vertexCount - 2)
-            {
-                triangles[i * 3] = 0;//First vert is always origin at our pos
-                triangles[i * 3 + 1] = i + 2;//Add other two verts for triangle
-                triangles[i * 3 + 2] = i + 1;
-            }
-        }
-
         lowCoverMesh.Clear();
-        lowCoverMesh.vertices = vertices;
-        lowCoverMesh.triangles = triangles;
-        lowCoverMesh.RecalculateNormals();
+
+        
+        if (!GameObject.FindGameObjectWithTag("Player").GetComponent<Player>().sneaking)
+        {
+            for (int i = 0; i < vertexCount - 1; i++)
+            {
+                vertices[i + 1] = transform.InverseTransformPoint(lowCoverPoints[i]);
+
+                if (i < vertexCount - 2)
+                {
+                    triangles[i * 3] = 0;//First vert is always origin at our pos
+                    triangles[i * 3 + 1] = i + 2;//Add other two verts for triangle
+                    triangles[i * 3 + 2] = i + 1;
+                }
+            }
+        
+            lowCoverMesh.vertices = vertices;
+            lowCoverMesh.triangles = triangles;
+            lowCoverMesh.RecalculateNormals();
+        }
 
     }
 
