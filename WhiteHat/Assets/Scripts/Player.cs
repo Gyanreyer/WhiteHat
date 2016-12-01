@@ -193,8 +193,6 @@ public class Player : MonoBehaviour {
 
         activeBarDecreaseAmt = 100/durationOrNumUses;
 
-        Debug.Log(activeAbility);
-
         GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1,1,1,1);
     }
 
@@ -203,14 +201,12 @@ public class Player : MonoBehaviour {
         switch(pasAb)
         {
             case PassiveAbilities.addSpeed:
-                moveSpeed *= 1.2f;
+                moveSpeed *= 1.05f;
                 break;
             case PassiveAbilities.addDetectionResisitance:
                 GameObject.Find("EnemyManager").GetComponent<EnemyManager>().spotTimeToAlert *= 1.1f;
                 break;
         }
-
-        Debug.Log(pasAb);
     }
 
     //Recharge ability bar to full
