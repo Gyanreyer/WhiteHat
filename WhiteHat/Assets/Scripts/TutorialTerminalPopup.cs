@@ -16,7 +16,7 @@ public class TutorialTerminalPopup : MonoBehaviour {
 	void Update () {
         UpdatePosition();
 
-        Debug.Log(playerGO.transform.position);
+        //Debug.Log(playerGO.transform.position);
     }
 
     public void UpdatePosition()
