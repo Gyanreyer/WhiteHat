@@ -11,7 +11,7 @@ public class FieldOfView : MonoBehaviour {
 
     public LayerMask playerMask;//Layer mask for player, the way this is set right now you could probably detect multiple players for multiplayer if we wanted to do that
     public LayerMask obstacleMask;//Layer mask for obstacles so that they'll be ignored/treated differently when in view radius than target
-    public LayerMask lowCoverMask;
+    private LayerMask lowCoverMask = ((1 << 9) | (1 << 15));
 
     public bool playerVisible = false;//Whether player is visible to this enemy
     public Transform lastKnownPlayerPos;//Last know transform of player, reset to null after a bit if player escapes
@@ -20,8 +20,6 @@ public class FieldOfView : MonoBehaviour {
 
     public int edgeResolveIterations;//Number of iterations per frame to resolve drawing on edges, higher = smoother look
     public float edgeDistanceThreshhold;
-
-    
 
     public MeshFilter viewMeshFilter;
     Mesh viewMesh;
@@ -115,7 +113,7 @@ public class FieldOfView : MonoBehaviour {
 
                 if (oldViewCastLow.hit != newViewCastLow.hit || (oldViewCastLow.hit && newViewCastLow.hit && edgeDistThreshholdExceededLow))
                 {
-                    EdgeInfo edge = FindEdge(oldViewCastLow, newViewCastLow,lowCoverMask);
+                    EdgeInfo edge = FindEdge(oldViewCastLow, newViewCastLow, lowCoverMask);
                     if (edge.pointA != Vector3.zero)
                     {
                         viewPoints.Add(edge.pointA);
@@ -125,31 +123,35 @@ public class FieldOfView : MonoBehaviour {
                         viewPoints.Add(edge.pointB);
                     }
                 }
-                
+
                 if (oldViewCast.hit != newViewCast.hit || (oldViewCast.hit && newViewCast.hit && edgeDistThreshholdExceeded))
-                {    
-                    EdgeInfo edge = FindEdge(oldViewCast,newViewCast,obstacleMask);
+                {
+                    EdgeInfo edge = FindEdge(oldViewCast, newViewCast, obstacleMask);
+
                     if (edge.pointA != Vector3.zero)
                     {
-                        if(!newViewCastLow.hit)
+                        if (!newViewCastLow.hit)
+                        {
                             viewPoints.Add(edge.pointA);
+                        }
 
                         lowCoverPoints.Add(edge.pointA);
                     }
                     if (edge.pointB != Vector3.zero)
                     {
                         if (!newViewCastLow.hit)
+                        {
                             viewPoints.Add(edge.pointB);
+                        }
 
                         lowCoverPoints.Add(edge.pointB);
                     }
                 }
+
+
             }
 
-            if (newViewCastLow.hit)
-                viewPoints.Add(newViewCastLow.point);
-            else
-                viewPoints.Add(newViewCast.point);
+            viewPoints.Add(newViewCastLow.point);
 
             lowCoverPoints.Add(newViewCast.point);
 
@@ -261,23 +263,6 @@ public class FieldOfView : MonoBehaviour {
         }
     }
 
-    /*
-    //Function sends out raycast and returns info
-    ViewCastInfo ViewCastLowCover(float globalAngle)
-    {
-        Vector3 dir = DirFromAngle(globalAngle, true);
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, viewRadius, lowCoverMask);
-
-        if (hit)
-        {
-            return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);//If hit, return info with point where it hit
-        }
-        else
-        {
-            return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);//If didn't hit, return info with default point at edge of radius
-        }
-    }*/
 
     //Stores info about raycasts
     public struct ViewCastInfo

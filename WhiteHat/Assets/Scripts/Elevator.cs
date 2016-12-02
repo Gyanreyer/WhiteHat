@@ -60,12 +60,13 @@ public class Elevator : MonoBehaviour {
                 GameObject playerGO = GameObject.Find("Player");
 
                 Vector2 playerDiffFromElevator = playerGO.transform.position - transform.position;
+                Vector2 cameraDiffFromPlayer = Camera.main.transform.position - playerGO.transform.position;
 
                 state = ElevatorState.arriving;
                 transform.position = new Vector3(nextPosition.x,nextPosition.y,transform.position.z);
 
                 playerGO.transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z-2) + (Vector3)playerDiffFromElevator;
-                Camera.main.transform.position = playerGO.transform.position;
+                Camera.main.transform.position = playerGO.transform.position + (Vector3)cameraDiffFromPlayer;
             }
         }
         else if (state == ElevatorState.arriving)

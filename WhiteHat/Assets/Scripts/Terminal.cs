@@ -35,11 +35,9 @@ public class Terminal : MonoBehaviour
 
         //Determine whether ability is active or passive, for now don't worry about it
         abilityIsActive = Random.value <= .45f;
-        //abilityIsActive = true;
 
         if (abilityIsActive)
         {
-            //thisActive = ActiveAbilities.shoot;
             thisActive = (ActiveAbilities)(int)Random.Range(1, ActiveAbilitiesUsesOrDuration.Length);//Pick a random ability from array
             spriteAnimator.Play("blue");
         }
