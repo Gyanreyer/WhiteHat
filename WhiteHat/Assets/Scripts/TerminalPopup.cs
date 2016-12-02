@@ -45,17 +45,17 @@ public class TerminalPopup : MonoBehaviour
         {
             case ActiveAbilities.invisible:
                 newSprite = abilitySprites[0];
-                newText += "(Invisibility)";
+                newText += "(Invisibility - 3s)";
                 break;
 
             case ActiveAbilities.dash:
                 newSprite = abilitySprites[1];
-                newText += "(Dash)";
+                newText += "(Dash - 3s)";
                 break;
 
             case ActiveAbilities.shoot:
                 newSprite = abilitySprites[1];
-                newText += "(Gun)";
+                newText += "(Gun - 1 shot)";
                 break;
 
         }

@@ -45,7 +45,7 @@ public class Player : MonoBehaviour {
 
     private PlayerState state;
 
-    public Sprite deathSprite,bodySprite;
+    public Sprite deathSprite,bodySprite,crouchSprite;
 
     public GameObject deathPartSys;
 
@@ -94,11 +94,15 @@ public class Player : MonoBehaviour {
             {
                 sneaking = true;
                 UpdateAnimationState();
+
+                body.GetComponent<SpriteRenderer>().sprite = crouchSprite;                    
             }
             else if(Input.GetKeyUp(KeyCode.LeftShift))
             {
                 sneaking = false;
                 UpdateAnimationState();
+
+                body.GetComponent<SpriteRenderer>().sprite = bodySprite;
             }
 
             //Move the player with WASD, sets velocity to apply to rigidbody in FixedUpdate
@@ -306,13 +310,11 @@ public class Player : MonoBehaviour {
             if (sneaking)
             {
                 legsAnim.speed = .6f;
-
                 noiseRingAnim.Play("sneak");
             }
             else
             {
                 legsAnim.speed = 1;
-                
                 noiseRingAnim.Play("run");
             }
 
@@ -332,6 +334,8 @@ public class Player : MonoBehaviour {
             newPartSys.transform.eulerAngles = new Vector3(-this.transform.eulerAngles.z - 90, 0, 0);//Set rotation of death part sys to what it needs to be
 
             Invoke("Respawn", 1);
+
+            return;
         }
     }
 
@@ -354,5 +358,7 @@ public class Player : MonoBehaviour {
         gameObject.layer = 8;
 
         legs.SetActive(true);
+
+        sneaking = false;
     }
 }
