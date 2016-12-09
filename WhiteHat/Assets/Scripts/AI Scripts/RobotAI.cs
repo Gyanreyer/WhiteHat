@@ -78,6 +78,8 @@ public class RobotAI : Vehicle
     private float fireTime = 0f;
     //temporary thing for making inspecting not look stupid
     private Vector3 addedOffsetPoint = Vector3.zero;
+    //DEFAULTS for resetting
+    Vector2 defaultPosition;
     #endregion
     #region Properties
     public float TimeToAlert
@@ -99,6 +101,7 @@ public class RobotAI : Vehicle
         render2.material.SetColor("_Color", new Color(221, 221, 221, 0.4f));
         playerObj = GameObject.FindGameObjectWithTag("Player");
         enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
+        defaultPosition = this.transform.position;
     }
 
     override public void Update()
@@ -367,6 +370,20 @@ public class RobotAI : Vehicle
         ApplyForce(force);
         //Reset the force for the next frame
         force = Vector3.zero;
+    }
+
+    /// <summary>
+    /// Call this when the player dies and the level needs to restart
+    /// </summary>
+    public void ResetToDefault()
+    {
+        force = Vector2.zero;
+        currentNode = patrolRoute[0];
+        currentNodeIndex = 0;
+        currentRecoveryNode = null;
+        this.transform.position = defaultPosition;
+        this.acceleration = Vector2.zero;
+        this.velocity = Vector2.zero;
     }
 
     private void ShootPlayer()

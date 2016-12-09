@@ -232,5 +232,16 @@ public class EnemyManager : MonoBehaviour
         currentTimeInAlarm = 0;
         currentTimeInSearching = 0;
     }
+
+    /// <summary>
+    /// Have the player call this when they die
+    /// </summary>
+    public void ResetEnemiesToDefaults()
+    {
+        foreach(GameObject c in cameras)
+            c.GetComponent<CameraAI>().ResetToDefaults();
+        foreach (GameObject r in robots)
+            r.GetComponent<RobotAI>().ResetToDefault();
+    }
     #endregion
 }

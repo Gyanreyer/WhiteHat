@@ -212,6 +212,15 @@ public class CameraAI : MonoBehaviour
         this.transform.eulerAngles = new Vector3(0, 0, totalRotation);
     }
 
+    /// <summary>
+    /// Call this when the player dies and the level restarts
+    /// </summary>
+    public void ResetToDefaults()
+    {
+        totalRotation = 0;
+        //... is this all it needs?
+    }
+
     private void ShootPlayer()
     {
         if (fireTime < 1 / fireRate)

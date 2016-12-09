@@ -343,7 +343,9 @@ public class Player : MonoBehaviour {
     {    
         ResetPlayer();
         this.transform.position = GameObject.Find("GameManager").GetComponent<GameManager>().RespawnLocation + new Vector3(0, 0, -2);
-        GameObject.Find("EnemyManager").GetComponent<EnemyManager>().ResetAlarm();
+        EnemyManager enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
+        enemyMan.ResetAlarm();
+        enemyMan.ResetEnemiesToDefaults();
     }
 
     void ResetPlayer()
