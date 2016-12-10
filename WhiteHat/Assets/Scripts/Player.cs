@@ -50,7 +50,7 @@ public class Player : MonoBehaviour {
     public GameObject deathPartSys;
 
     public ActiveAbilities activeAbility;
-    public PassiveAbilities passiveAbility;
+    //public PassiveAbilities passiveAbility;
 
     public float percentActiveLeft = 0;//100 is full
     private bool isAbilityActive = false;
@@ -63,6 +63,16 @@ public class Player : MonoBehaviour {
 
     private Animator noiseRingAnim;
     private Animator legsAnim;
+
+    private struct lastStateStats
+    {
+        public float moveSpeed;
+        public float percentActiveLeft;
+        public float activeBarDecreaseAmt;
+        public ActiveAbilities activeAbility;
+    }
+
+    lastStateStats lastState;
 
 	// Use this for initialization
 	void Start () {
@@ -80,6 +90,8 @@ public class Player : MonoBehaviour {
 
         noiseRingAnim = transform.FindChild("NoiseRing").GetComponent<Animator>();
         legsAnim = legs.GetComponent<Animator>();
+
+        SaveState();
 	}
 	
 	// Update is called once per frame
@@ -362,5 +374,18 @@ public class Player : MonoBehaviour {
         legs.SetActive(true);
 
         sneaking = false;
+
+        moveSpeed = lastState.moveSpeed;
+        percentActiveLeft = lastState.percentActiveLeft;
+        activeAbility = lastState.activeAbility;
+        activeBarDecreaseAmt = lastState.activeBarDecreaseAmt;
+    }
+
+    public void SaveState()
+    {
+        lastState.moveSpeed = moveSpeed;
+        lastState.percentActiveLeft = percentActiveLeft;
+        lastState.activeAbility = activeAbility;
+        lastState.activeBarDecreaseAmt = activeBarDecreaseAmt;
     }
 }

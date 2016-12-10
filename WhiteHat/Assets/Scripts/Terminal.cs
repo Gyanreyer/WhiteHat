@@ -27,9 +27,15 @@ public class Terminal : MonoBehaviour
     public GameObject terminalPopup;
     private bool inRange;
 
+    public bool lastUsedState;
+    public bool used;
+
     // Use this for initialization
     void Awake()
     {
+        used = false;
+        lastUsedState = false;
+
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
         spriteAnimator = GetComponent<Animator>();
 
@@ -59,6 +65,8 @@ public class Terminal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (used) return;
+
         Vector2 vecToPlayer = player.transform.position - transform.position;
 
         if (vecToPlayer.magnitude < useRadius)
@@ -111,12 +119,19 @@ public class Terminal : MonoBehaviour
 
         terminalPopup.SetActive(false);
 
-        Destroy(this);//Can't interact with this anymore ever because just deleting this script
+        used = true;
     }
 
     //Called when object was disabled in scene and was then re-enabled.  Need to start up proper animations accordingly
     void OnEnable()
     {
+        StartTerminal();
+    }
+
+    public void StartTerminal()
+    {
+        used = false;
+
         if (abilityIsActive)
         {
             spriteAnimator.Play("blue");
@@ -125,5 +140,15 @@ public class Terminal : MonoBehaviour
         {
             spriteAnimator.Play("orange");
         }
+    }
+
+    public void SaveState()
+    {
+        lastUsedState = used;
+    }
+
+    public void RestoreLastState()
+    {
+        used = lastUsedState;
     }
 }
