@@ -379,6 +379,9 @@ public class Player : MonoBehaviour {
         percentActiveLeft = lastState.percentActiveLeft;
         activeAbility = lastState.activeAbility;
         activeBarDecreaseAmt = lastState.activeBarDecreaseAmt;
+
+        if(percentActiveLeft>0)
+            GameObject.Find("qKeyPrompt").GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
 
     public void SaveState()
