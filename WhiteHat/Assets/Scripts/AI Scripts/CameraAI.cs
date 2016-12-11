@@ -217,7 +217,9 @@ public class CameraAI : MonoBehaviour
     /// </summary>
     public void ResetToDefaults()
     {
-        totalRotation = 0;
+        totalRotation = minRot;
+        this.camState = CameraStates.Patroling;
+        //this.transform.rotation = Quaternion.Euler(new Vector3(0, 0, minRot));
         //... is this all it needs?
     }
 

@@ -105,7 +105,7 @@ public class Elevator : MonoBehaviour {
         transform.position -= new Vector3(0,0,3);
 
         //activate next floor and set checkpoint
-        GameObject.Find("GameManager").GetComponent<GameManager>().ActivateNextFloor();
+        GameObject.Find("GameManager").GetComponent<GameManager>().ActivateNextFloor(nextPosition);
 
         usedElevator = true;
 

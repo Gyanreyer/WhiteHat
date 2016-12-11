@@ -4,41 +4,57 @@ using System.Collections;
 public class Checkpoint : MonoBehaviour {
 
     public Sprite offSprite, onSprite;
-    SpriteRenderer spriteRend;
-    //CheckpointPopup checkpointCanvas;
-    GameObject player;
     public float activateRange;
+    private SpriteRenderer spriteRend;
+    private GameObject popupCanvas;
+    private Player player;
+    private GameManager gameMan;
+    private bool inRange = false;
 
-	void Start ()
+    void Start ()
     {
-        player = GameObject.Find("Player");
+        player = GameObject.Find("Player").GetComponent<Player>();
         spriteRend = this.GetComponent<SpriteRenderer>();
         this.transform.rotation = Quaternion.Euler(new Vector3(0, 0, Random.Range(-45, 45)));
-        //checkpointCanvas = GameObject.Find("");
+        popupCanvas = GameObject.Find("CheckpointPopupCanvas");
+        gameMan = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 	
 	void Update ()
     {
-        //Only bother with any of this if you aren't already active
-        if(spriteRend.sprite==offSprite)
+        Vector2 vecToPlayer = player.transform.position - this.transform.position;
+
+        if (vecToPlayer.sqrMagnitude < activateRange * activateRange)
         {
-            Vector2 vecToPlayer = player.transform.position - this.transform.position;
-            if (vecToPlayer.sqrMagnitude < activateRange * activateRange)
+            if(Input.GetKeyDown(KeyCode.E))
             {
-                //toggle the canvas here!!!
-                if (Input.GetKeyDown(KeyCode.E))
-                {
-                    ToggleSprite();
-                }
+                gameMan.SetCheckpoint(this);
+                this.SetSpriteOn(true);
             }
+            if (!inRange)
+            {
+                inRange = true;
+                popupCanvas.SetActive(true);
+            }
+        }
+        else if (inRange)
+        {
+            popupCanvas.SetActive(false);
+            inRange = false;
         }
 	}
 
-    public void ToggleSprite()
+    public void SetSpriteOn(bool on)
     {
-        if (spriteRend.sprite == offSprite)
+        if (on)
+        {
             spriteRend.sprite = onSprite;
+            this.transform.localScale = new Vector3(.025f, .025f, 1);
+        }
         else
-            spriteRend.sprite = onSprite;
+        {
+            spriteRend.sprite = offSprite;
+            this.transform.localScale = new Vector3(.25f, .25f, 1);
+        }
     }
 }

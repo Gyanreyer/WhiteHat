@@ -358,6 +358,7 @@ public class Player : MonoBehaviour {
         EnemyManager enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
         enemyMan.ResetAlarm();
         enemyMan.ResetEnemiesToDefaults();
+        GameObject.Find("GameManager").GetComponent<GameManager>().RestoreTerminals();
     }
 
     void ResetPlayer()

@@ -150,5 +150,7 @@ public class Terminal : MonoBehaviour
     public void RestoreLastState()
     {
         used = lastUsedState;
+        if (!used)
+            StartTerminal();
     }
 }

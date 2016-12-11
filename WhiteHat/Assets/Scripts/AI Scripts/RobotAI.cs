@@ -102,6 +102,7 @@ public class RobotAI : Vehicle
         playerObj = GameObject.FindGameObjectWithTag("Player");
         enemyMan = GameObject.Find("EnemyManager").GetComponent<EnemyManager>();
         defaultPosition = this.transform.position;
+        currentRecoveryNode = patrolRoute[0];
     }
 
     override public void Update()
