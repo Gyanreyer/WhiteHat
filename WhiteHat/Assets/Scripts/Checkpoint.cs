@@ -6,7 +6,7 @@ public class Checkpoint : MonoBehaviour {
     public Sprite offSprite, onSprite;
     public float activateRange;
     private SpriteRenderer spriteRend;
-    private GameObject popupCanvas;
+    public GameObject popupCanvas;
     private Player player;
     private GameManager gameMan;
     private bool inRange = false;
@@ -16,7 +16,6 @@ public class Checkpoint : MonoBehaviour {
         player = GameObject.Find("Player").GetComponent<Player>();
         spriteRend = this.GetComponent<SpriteRenderer>();
         this.transform.rotation = Quaternion.Euler(new Vector3(0, 0, Random.Range(-45, 45)));
-        popupCanvas = GameObject.Find("CheckpointPopupCanvas");
         gameMan = GameObject.Find("GameManager").GetComponent<GameManager>();
 	}
 	

@@ -381,7 +381,7 @@ public class RobotAI : Vehicle
         force = Vector2.zero;
         currentNode = patrolRoute[0];
         currentNodeIndex = 0;
-        currentRecoveryNode = null;
+        currentRecoveryNode = patrolRoute[0];
         this.transform.position = defaultPosition;
         this.acceleration = Vector2.zero;
         this.velocity = Vector2.zero;
